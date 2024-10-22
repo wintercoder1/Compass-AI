@@ -1,0 +1,10 @@
+.env
+__pycache__/*
+citation/*
+offload/*
+test/*
+venv/*
+weights/*
+test_llama_instruct_llm.py
+index.html
+PineconeIndex.py

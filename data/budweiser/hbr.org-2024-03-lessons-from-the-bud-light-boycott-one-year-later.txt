@@ -1,0 +1,70 @@
+Lessons from the Bud Light Boycott, One Year Later
+
+Natalie Behring/Getty Images
+Taking a social stance has become a rite of passage for contemporary brands that are hoping to resonate with younger, more socially-conscious audiences. In April 2023, Bud Light tried its hand at this strategy, collaborating with transgender influencer Dylan Mulvaney on a social media promotional post. This sparked backlash from several prominent conservatives, leading many conservative figures and groups to call for a boycott of Bud Light.
+
+Although several brands like Nike, Pepsi, and Goya have faced criticism for their positions on social issues in recent years, the controversies surrounding these brands quickly fell out of the public eye. Academic research measuring the sales impact of boycott and “buycott” movements has also found small, short-lived effects for the brands involved. Thus, few anticipated the sustained hit to sales that Bud Light has endured.
+
+In this article, we document the impact of the Bud Light boycott and discuss several factors that can make a brand more susceptible to boycotts. 
+
+The Aftermath
+
+First, we document the sales impact of the Bud Light boycott using a representative 150,000 household panel from Numerator, a data analytics and market research company that sources purchase data directly from consumers. We measured changes in Bud Light sales (in dollars) and purchase incidence — whether a consumer bought the brand — after the controversy, relative to Bud Light consumption patterns and seasonal trends in 2021 and 2022. 
+
+Our findings indicate that in the three months following the controversy, Bud Light sales and purchase incidence were about 28% lower than the same time period in prior years. Notably, this initial decline was more pronounced in predominantly Republican counties (as measured by the 2020 presidential vote) than predominantly Democratic counties. Both sales and purchase incidence decreased by about 32% in more Republican counties versus 22% in more Democratic counties. 
+
+However, unlike with other consumer boycotts, Bud Light has not bounced back quickly. The sales decline persisted for close to eight months, with sales and purchase incidence down by 32% in Q4 2023. Interestingly, the sales decline in Democratic counties became even larger over time, shrinking the gap between Republican and Democratic counties. This additional decline in sales is likely a result of retailers and distributors reducing shelf space for Bud Light, illustrating how boycotts can lead to a negative feedback loop. What started as a consumer-led boycott generated downstream adjustments from retailers and distributors. These supply-side adjustments hurt the brand’s visibility and further exacerbated the negative impact on Bud Light’s performance.
+
+Bud Light purchases fell in republican- and democratic-leaning counties following a social media backlash in 2023. The boycott in response to a social media campaign led to a prolonged sales slump, unlike many other such boycotts. Two line graphs compare the year-over-year change in Bud Light weekly sales and purchase incidence in highly Democratic and highly Republican counties for the years 20 21, 22, and 23. 20 21 and 20 22 experienced similar fluctuations in sales throughout the year, but 20 23 saw a decrease following a controversial social media post that occurred in the early weeks of the year; the decline in sales and purchase incidence extended through the year, and was even more pronounced in highly republican counties.Source: Authors’ analysis of Numerator data.
+See more HBR charts in Data & Visuals
+
+Who are the consumers behind the boycott and how have they adjusted their purchase behavior? To study the substitution behavior of consumers, we identified Bud Light “loyalists” in the Numerator household panel as frequent beer drinkers who purchased Bud Light more than any other brand in the first four months of 2023. Comparing purchase behavior post-controversy to the same time period in 2022, we estimated that in the three months immediately succeeding the boycott, 15% of previously loyal Bud Light customers shifted their primary spending to other brands as part of the boycott. Of those boycotters, 38% transitioned to Coors, 23% to Miller, 14% to Yuengling, and 7% to Modelo. The remaining boycotters distributed their spending across various other beer brands. 
+
+What Factors Make a Brand More Susceptible to Boycotts?
+
+Why has Bud Light endured more sustained sales decreases than other brands that have been the target of recent boycotts?  We see several reasons.
+
+Polarization of consumer base.
+
+One important factor is the degree of polarization in a brand’s existing consumer base, and how the views of the core base accord or conflict with the brand’s stance on social or political issues. Does the existing customer base skew more liberal or more conservative? Or does it represent an even split of Americans? 
+
+We constructed a political polarization index for the top beer brands and show the positions of brands in 2022 and 2023. We see differences across brands in terms of whether their sales are more concentrated in Republican- or Democrat-leaning counties. Busch, Natural Light, and Yuengling are more popular in Republican counties, while Modelo, Corona, and Heineken are more popular in Democratic ones. Bud Light, Coors, and Budweiser fall fairly close to the center of the spectrum.  
+
+Overall, brands near the middle of the spectrum may be in an especially vulnerable position because taking a stance on any polarizing issue could potentially alienate a large chunk of their customer base. In contrast, brands near the ends of the spectrum can more safely take positions that align with their customers’ views, without the risk of angering many existing customers. This requires brands to know who their core customers are and what they value.
+
+This scatter plot shows the relationship between U S beer brands’ share of total beer sales in 20 22 and 20 23 (shown on the y axis) and each beer’s relative position on a political polarization index (shown on the x axis). Brands positioned further to the right have a higher concentration of their sales in Republican counties, while those on the left have more sales concentrated in Democratic counties. A county’s political leaning is based on its presidential vote share in the 2020 election. Bud Light, a slightly right-leaning brand (according to the index) with the largest share of sales overall, saw a decrease, from 12 percent to 10 percent of total beer sales. All other brands shown in the chart, including both those positioned as more democratic and those positioned as more republican, experienced increases in sales from 20 22 to 20 23. The brands positioned as More democratic include Corona, Modelo Especial, and Heineken. Those positioned as more republican include Mickalobe Ultra, Miller Lite, Busch Light, Natural Light, and Yuengling. Republican-positioned brands that fall close to the center include Bud Light, Coors Light, and Budweiser. Source: Authors’ analysis of Numerator data.
+See more HBR charts in Data & Visuals
+
+Substitutability of the product.
+
+Brands that have many close substitutes are easier to boycott because there are many similar alternatives that consumers can switch to. By contrast, brands that are more unique and do not have good substitutes are harder to boycott because consumers must “give up” more by switching to an alternative or ceasing consumption in the category altogether. In our previous analysis of the Goya Foods boycott and a counter “buycott” movement supporting the brand, we saw more evidence of political consumerism in more commoditized categories like canned beans and less evidence of switching in categories where Goya offered differentiated products, like their unique spice blends in the herbs & seasonings category.
+
+In the case of Bud Light, the presence of many other light beers on the shelf suggests a high degree of substitutability and low switching costs. This is compounded by the brand’s lack of taste differentiation from its closest competitors: Blind taste tests on social media show light beer drinkers struggling to distinguish Bud Light from Coors Light and Miller Light. The similarity in flavor profiles among these leading light beer brands suggests that, for consumers, the decision to boycott Bud Light by switching to an alternative like Coors Light or Miller Light involves minimal sacrifice in terms of taste preference.
+
+Observability of consumption. 
+
+Some consumers may be intrinsically driven to participate in a boycott, while others may participate in order to outwardly show their support for a set of issues. Thus, the observability of consumption may be an important factor that can determine the strength of boycotting.
+
+Based on a survey and verified purchase data of Numerator panelists who had consumed Bud Light before the controversy, we found that respondents who identified as social drinkers were more likely to have ceased consuming Bud Light following the controversy relative to respondents who mostly drink beer in private. These results suggest that brands primarily consumed in private may be more insulated from consumer backlash. Beer is consumed both in public and private settings, making it more susceptible.
+
+Sense of brand ownership.
+
+Consumer behavior research has shown that individuals often use products to signal their type to others and “psychological ownership” can lead individuals to perceive their possessions as forming part of their identity or an extension of themselves. While psychological ownership can benefit brands by increasing a sense of loyalty, consumers may feel disrespected when a brand with which they identify acts in contrast with their values. Thus, brands that consumers are known to identify with may prefer to take extra care.
+
+Bud Light has historically invested heavily in advertising campaigns, which may have built a strong sense of psychological ownership with their customers that led many to feel personally affronted by the brand supporting an issue they did not agree with. In a survey of Numerator panelists, more than 60% of the respondents that decreased their consumption of Bud Light after the controversy attributed the reason to the brand’s values or brand image.
+
+Engagement can prolong the attention.
+
+News coverage can help fuel the flames of a boycott movement. Instead of remaining silent after the controversy broke out, Bud Light eventually addressed the controversy publicly and later put the managers in charge of the campaign on leave. These follow-up actions may have inadvertently prolonged the media coverage of the boycott, keeping the issue top-of-mind with consumers, and contributing to longer-lasting changes in behavior.
+
+Changes in distribution and shelf space.
+
+While most retailers are willing to tolerate some short-lived sales fluctuations, longer-term changes in demand often lead to a redistribution of scarce shelf space in stores. This supply-side response can further accelerate sales decreases driven by consumers.
+
+Indeed, Bud Light has lost shelf space at retailers and tap handles at bars, which is driving some of the longer-term sales declines. This example shows that the supply-side reaction can amplify the effect of a boycott. As Bud Light lost visibility and accessibility in stores and bars, the opportunity for sales further diminished, creating a feedback loop that deepened the sales decline.
+
+Lessons from the Bud Light Boycott
+
+In the aftermath of the Bud Light controversy, many consumer brand marketing departments have become acutely aware of the potential pitfalls of taking stances on controversial social issues and have become fearful of experiencing a similar backlash and the accompanying financial and reputational costs.
+
+But marketers should keep in mind that not all boycotts are equal. As we have explained, several factors affect how significant they can be. For brand marketers, it is essential to know your consumer base and align your messaging accordingly, assess your vulnerability to close competitors, and avoid actions that will prolong negative attention in the media.
