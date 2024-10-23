@@ -27,7 +27,7 @@ async def getPoliticalLeaningWithCitation(query_topic):
     print('Request received with topic: {query_topic}')
     print('Waiting....')
 
-    reposne = llmWithCitations.politicalQueryWithCitation(query_topic_str)
+    reposne = llmWithCitations.politicalQueryWithCitationLocal(query_topic_str)
     split = reposne.split('Lean:')
 
     if len(split) > 1:
@@ -66,5 +66,5 @@ async def getPoliticalLeaningWithCitation(query_topic):
 async def getPoliticalLeaningWithoutCitation(query_topic):
     llmMWithCitations = LLMWithCitations()
     query_topic_str = str(query_topic)
-    reposne = llmMWithCitations.politicalQueryWithOUTCitation(query_topic_str)
+    reposne = llmMWithCitations.politicalQueryWithOUTCitationLocal(query_topic_str)
     return {"Response": reposne}
