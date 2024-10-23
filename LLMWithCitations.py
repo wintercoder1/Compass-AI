@@ -72,7 +72,7 @@ class LLMWithCitations():
     # Takes query topic and perfomrs inference with political leaning prompt.
     # Gives ciations with query engine. 
     # Not 100% accurate yet. Use politicalQueryWithOUTCitation if thats an issue.
-    def politicalQueryWithCitation(self, topic):
+    def politicalQueryWithCitationLocal(self, topic, withGPU=False):
         prompt_tmpl = PromptTemplate(POLITICAL_LIB_OR_CON_SCORE_PROMPT)
         the_query = prompt_tmpl.format(topic_of_prompt=topic)
 
@@ -90,7 +90,7 @@ class LLMWithCitations():
 
         return responseStr
 
-    def politicalQueryWithOUTCitation(self, topic):
+    def politicalQueryWithOUTCitationLocal(self, topic, withGPU=False):
         prompt_tmpl = PromptTemplate(POLITICAL_LIB_OR_CON_SCORE_PROMPT)
         the_query = prompt_tmpl.format(topic_of_prompt=topic)
 
@@ -128,7 +128,7 @@ def testWithTopic():
     topic = 'Jiffy Lube'
     # topic = 'Molson'
     # topic = 'Valvoline'
-    response = llmWithCitations.politicalQueryWithCitation(topic)
+    response = llmWithCitations.politicalQueryWithCitationLocal(topic)
 
     return response
 
