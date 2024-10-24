@@ -4,21 +4,6 @@ from LLMWithCitations import LLMWithCitations
 
 app = FastAPI()
 
-
-# @app.get("/")
-# async def root():
-    # html = "
-    #     <form action="" method="get" class="form-example">
-    #         <div class="form-example">
-    #             <label for="name">Enter your name: </label>
-    #             <input type="text" name="name" id="name" required />
-    #         </div>
-    #     </form>
-    # "
-    # return {"message": "Hello World"}
-
-
-
 @app.get("/getPoliticalLeaningWithCitation/{query_topic}")
 async def getPoliticalLeaningWithCitation(query_topic):
 
