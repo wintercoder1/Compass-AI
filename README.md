@@ -35,7 +35,7 @@ uvicorn API:app --reload
 
 Note: This is a different command than on MacOS/Linux
 
-### Once setup is Complete
+## Once setup is Complete
 This will launch the server with the endpoint: getPoliticalLeaningWithCitation/{query_topic}
 
 Replace query topic with whatever you want to know more about polically for example a get request on
