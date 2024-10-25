@@ -1,19 +1,19 @@
 import json
 from fastapi import FastAPI
-from LLMWithCitations import LLMWithCitations
+from LLMQueryEngine import LLMQueryEngine
 
 app = FastAPI()
 
 @app.get("/getPoliticalLeaningWithCitation/{query_topic}")
 async def getPoliticalLeaningWithCitation(query_topic):
 
-    llmWithCitations = LLMWithCitations()
+    llmWithCitations = LLMQueryEngine()
     query_topic_str = str(query_topic)
     print('Request received with topic: {query_topic}')
     print('Waiting....')
 
-    reposne = llmWithCitations.politicalQueryWithCitationLocal(query_topic_str)
-    split = reposne.split('Lean:')
+    resposne = llmWithCitations.politicalQueryWithCitationLocal(query_topic_str)
+    split = resposne.split('Lean:')
 
     if len(split) > 1:
         split = split[1]
@@ -46,10 +46,18 @@ async def getPoliticalLeaningWithCitation(query_topic):
 
     return {"Response": response}
 
-
-@app.get("/getPoliticalLeaningWithoutCitation/{query_topic}")
+# Will not return a citation based off of sources. Won't consider the documents gathered on possible topics.
+@app.get("/getPoliticalLeaning/{query_topic}")
 async def getPoliticalLeaningWithoutCitation(query_topic):
-    llmMWithCitations = LLMWithCitations()
+    llmQueryEngine = LLMQueryEngine()
     query_topic_str = str(query_topic)
-    reposne = llmMWithCitations.politicalQueryWithOUTCitationLocal(query_topic_str)
+    reposne = llmQueryEngine.politicalQueryLocal(query_topic_str)
+    return {"Response": reposne}
+
+# Faster gpu enabled version. Currently does not fetch citations from index
+@app.get("/getPoliticalLeaningWithGPU/{query_topic}")
+async def getPoliticalLeaningWithoutCitationWithGPU(query_topic):
+    llmQueryEngine = LLMQueryEngine()
+    query_topic_str = str(query_topic)
+    reposne = llmQueryEngine.politicalQueryLocalWithGPU(query_topic_str)
     return {"Response": reposne}
