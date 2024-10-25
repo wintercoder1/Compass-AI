@@ -89,20 +89,18 @@ class LLMQueryEngine():
         )
         return llm
     
+    # TODO Include a config.json file in weights because that is what hugging face expects.
     def confifureLlamaTransformersHFWithGPU(self):
-        llama_3_8B_instruct_base_path = 'weights/'
-        llama_3_8B_instruct_path = llama_3_8B_instruct_base_path + 'Meta-Llama-3.1-8B-Instruct-Q5_K_M.gguf'
-        llama_3_8B_instruct_tokenizer_path = llama_3_8B_instruct_base_path + ''
-
+        llama_3_8B_instruct_base_path = 'C:/Users/Steven/Documents/Dev/DEICheck.ai-withGPU/DEICheck.ai/weights/'
         # Load your local fine-tuned model and tokenizer
-        model = AutoModelForCausalLM.from_pretrained(llama_3_8B_instruct_path)
-        model = AutoModelForCausalLM.from_pretrained(llama_3_8B_instruct_path, device_map = 'cuda')
-        tokenizer = AutoTokenizer.from_pretrained(llama_3_8B_instruct_tokenizer_path)
+        # model = AutoModelForCausalLM.from_pretrained(llama_3_8B_instruct_path)
+        model = AutoModelForCausalLM.from_pretrained(llama_3_8B_instruct_base_path, device_map = 'cuda')
+        # tokenizer = AutoTokenizer.from_pretrained(llama_3_8B_instruct_tokenizer_path)
 
         # Create the HuggingFaceLLM object
         llm = HuggingFaceLLM(
             model=model,
-            tokenizer=tokenizer,
+            # tokenizer=tokenizer,
             context_window=3900,
             max_new_tokens=256,
             # device_map="auto"
@@ -144,11 +142,15 @@ class LLMQueryEngine():
 
         return response
     
-    def politicalQueryLocalWithGPU(self, topic):
+    def politicalQueryLocalWithGPU(self, topic, useHF=False):
         prompt_tmpl = PromptTemplate(POLITICAL_LIB_OR_CON_SCORE_PROMPT)
         the_query = prompt_tmpl.format(topic_of_prompt=topic)
 
-        gpu_acc_llama = self.confifureLlamaCPPWithGPU()
+        if useHF:
+            gpu_acc_llama = self.confifureLlamaTransformersHFWithGPU()
+        else:
+            gpu_acc_llama = self.confifureLlamaCPPWithGPU()
+
         response = gpu_acc_llama(
             the_query,
             # max_tokens=1024,
@@ -207,7 +209,7 @@ def testGPU(topic: str):
     print(cuda.current_device())
  
     llmWithCitations = LLMQueryEngine()
-    output = llmWithCitations.politicalQueryLocalWithGPU(topic)
+    output = llmWithCitations.politicalQueryLocalWithGPU(topic, useHF=True)
 
     return output
 
