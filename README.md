@@ -5,6 +5,7 @@ The retrieval augmented generative AI powered app that fuels DEICheck.ai. Uses L
 
 Bring your own LLM with weights saved in .gguf format. Place that in a folder in the main directory called weights.
 
+One recomendation is the Llama Instruct fine tuned model. It can be found here: https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct. 
 
 ### MacOS/Linux
 Begin the FastAPI server with the command:
@@ -28,12 +29,11 @@ pip install llama-cpp-python --force-reinstall --upgrade --no-cache-dir
 
 Once that is complete the politicalQueryWithOUTCitationLocalWithGPU method will work with the cpu. The response will be 20-30 seconds instead of minutes.
 
-Note for the fasta api server to work on Windows the follow command will need to be ru:
-
+To start the FastAPI server to work on Windows the follow command will need to be run:
 
 uvicorn API:app --reload
 
-This is a different command than on MacOS/Linux
+Note: This is a different command than on MacOS/Linux
 
 ### Once setup is Complete
 This will launch the server with the endpoint: getPoliticalLeaningWithCitation/{query_topic}
