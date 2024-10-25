@@ -10,6 +10,8 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.llama_cpp import LlamaCPP
 from llama_index.core.llms import LLM
 from llama_cpp import Llama
+from llama_index.llms.huggingface import HuggingFaceLLM
+from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 from torch import cuda
 
@@ -87,6 +89,27 @@ class LLMQueryEngine():
         )
         return llm
     
+    def confifureLlamaTransformersHFWithGPU(self):
+        llama_3_8B_instruct_base_path = 'weights/'
+        llama_3_8B_instruct_path = llama_3_8B_instruct_base_path + 'Meta-Llama-3.1-8B-Instruct-Q5_K_M.gguf'
+        llama_3_8B_instruct_tokenizer_path = llama_3_8B_instruct_base_path + ''
+
+        # Load your local fine-tuned model and tokenizer
+        model = AutoModelForCausalLM.from_pretrained(llama_3_8B_instruct_path)
+        model = AutoModelForCausalLM.from_pretrained(llama_3_8B_instruct_path, device_map = 'cuda')
+        tokenizer = AutoTokenizer.from_pretrained(llama_3_8B_instruct_tokenizer_path)
+
+        # Create the HuggingFaceLLM object
+        llm = HuggingFaceLLM(
+            model=model,
+            tokenizer=tokenizer,
+            context_window=3900,
+            max_new_tokens=256,
+            # device_map="auto"
+            device_map="cuda"
+        )
+        return llm
+
     #
     # Takes query topic and perfomrs inference with political leaning prompt.
     # Gives ciations with query engine. 
