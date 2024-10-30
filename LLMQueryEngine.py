@@ -1,19 +1,24 @@
 import DataIngestion
 from PromptTemplates import POLITICAL_LIB_OR_CON_SCORE_PROMPT
-from llama_index.core import PromptTemplate
-from llama_index.core import Settings
-from llama_index.core.indices.list import GPTListIndex
-from llama_index.core.indices.vector_store.base import GPTVectorStoreIndex
-from llama_index.core.node_parser import SimpleNodeParser
-from llama_index.core.query_engine import CitationQueryEngine
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
-from llama_index.llms.llama_cpp import LlamaCPP
-from llama_index.core.llms import LLM
-from llama_cpp import Llama
-from llama_index.llms.huggingface import HuggingFaceLLM
-from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 from torch import cuda
+from huggingface_hub import InferenceClient
+from llama_index.core import PromptTemplate
+from llama_index.core import Settings
+from llama_index.core.query_engine import CitationQueryEngine
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+
+from llama_index.llms.huggingface_api import HuggingFaceInferenceAPI
+
+from dotenv import find_dotenv, dotenv_values
+
+
+
+from llama_cpp import Llama
+from llama_index.llms.llama_cpp import LlamaCPP
+from llama_index.llms.huggingface import HuggingFaceLLM
+from transformers import AutoModelForCausalLM
+
 
 #
 #
@@ -30,9 +35,13 @@ from torch import cuda
 #
 class LLMQueryEngine():
 
-    def __init__(self) -> None:
+    def __init__(self, localLLM=False) -> None:
         # The LLM version
-        default_cpu_llama_llm = self.confifureLlamaCPP()
+        # default_cpu_llama_local_llm = LocalLLMFactory.configureLlamaCPP()
+        if localLLM:
+            llm_to_use = self.configureLlamaCPP()
+        else:
+            llm_to_use = self.confifureHFLlamaIndexInferenceRemote()
         # The embeddings model
         bge_small_embed_model = HuggingFaceEmbedding(model_name='BAAI/bge-small-en-v1.5')
         Settings.embed_model = bge_small_embed_model
@@ -45,14 +54,15 @@ class LLMQueryEngine():
             similarity_top_k=2,
             # here we can control how granular citation sources are, the default is 512
             citation_chunk_size=128,
-            llm=default_cpu_llama_llm,
+            # llm=default_cpu_llama_local_llm,
+            llm=llm_to_use,
         )
         return
-
-    def confifureLlamaCPP(self):
+    
+    def configureLlamaCPP(self):
         llama_3_8B_instruct_base_path = 'weights/'
         llama_3_8B_instruct_path = llama_3_8B_instruct_base_path + 'Meta-Llama-3.1-8B-Instruct-Q5_K_M.gguf'
-   
+
         llm = LlamaCPP(
             # You can pass in the URL to a GGML model to download it automatically
             # model_url=model_url,
@@ -73,13 +83,13 @@ class LLMQueryEngine():
             # verbose=True,
             verbose=False,
         )
-        
+
         return llm
 
     def confifureLlamaCPPWithGPU(self):
         llama_3_8B_instruct_base_path = 'weights/'
         llama_3_8B_instruct_path = llama_3_8B_instruct_base_path + 'Meta-Llama-3.1-8B-Instruct-Q5_K_M.gguf'
-    
+
         gpu_layers = 50 # Change this value based on your model and your GPU VRAM. -1 means full offload to GPU
         llm = Llama(
             model_path=llama_3_8B_instruct_path,
@@ -88,9 +98,9 @@ class LLMQueryEngine():
             n_gpu_layers=gpu_layers,
         )
         return llm
-    
-    # TODO Include a config.json file in weights because that is what hugging face expects.
-    def confifureLlamaTransformersHFWithGPU(self):
+
+    # TODO Include a config.json file in weights because that is what hugging face wants.
+    def confifureLlamaTransformersHFWithGPULocal(self):
         llama_3_8B_instruct_base_path = 'C:/Users/Steven/Documents/Dev/DEICheck.ai-withGPU/DEICheck.ai/weights/'
         # Load your local fine-tuned model and tokenizer
         # model = AutoModelForCausalLM.from_pretrained(llama_3_8B_instruct_path)
@@ -108,11 +118,26 @@ class LLMQueryEngine():
         )
         return llm
 
+    def confifureHFLlamaIndexInferenceRemote(self):
+        dotenv = dotenv_values(find_dotenv())
+        HF_INFERENCE_TOKEN = dotenv.get("HF_CLI_INFERENCE_TOKEN")
+        # HuggingFaceInferenceAPI is a subclass of LLamaIndex's LLM class as thus can be
+        # used with the citation query engine class.
+        llm = HuggingFaceInferenceAPI(
+            model_name= "meta-llama/Llama-3.1-8B-Instruct",
+            # model_name= "meta-llama/Llama-2-7b-hf",
+            # model_name= "meta-llama/Llama-3.2-3B-Instruct",
+            # temperature=0.7,
+            max_tokens=100,
+            token=HF_INFERENCE_TOKEN,  # Optional
+        )
+        return llm
+
     #
     # Takes query topic and perfomrs inference with political leaning prompt.
     # Gives ciations with query engine. 
     # Not 100% accurate yet. Use politicalQueryWithOUTCitation if thats an issue.
-    def politicalQueryWithCitationLocal(self, topic):
+    def politicalQueryWithCitation(self, topic):
         prompt_tmpl = PromptTemplate(POLITICAL_LIB_OR_CON_SCORE_PROMPT)
         the_query = prompt_tmpl.format(topic_of_prompt=topic)
 
@@ -138,16 +163,17 @@ class LLMQueryEngine():
         prompt_tmpl = PromptTemplate(POLITICAL_LIB_OR_CON_SCORE_PROMPT)
         the_query = prompt_tmpl.format(topic_of_prompt=topic)
 
-        response = Settings.llm.complete(the_query)
+        llm = self.confifureLlamaCPPWithGPU()
+        response = llm.complete(the_query)
 
         return response
     
-    def politicalQueryLocalWithGPU(self, topic, useHF=False):
+    def politicalQueryWithGPULocal(self, topic, useHFLocal=False):
         prompt_tmpl = PromptTemplate(POLITICAL_LIB_OR_CON_SCORE_PROMPT)
         the_query = prompt_tmpl.format(topic_of_prompt=topic)
 
-        if useHF:
-            gpu_acc_llama = self.confifureLlamaTransformersHFWithGPU()
+        if useHFLocal:
+            gpu_acc_llama = self.confifureLlamaTransformersHFWithGPULocal()
         else:
             gpu_acc_llama = self.confifureLlamaCPPWithGPU()
 
@@ -174,6 +200,48 @@ class LLMQueryEngine():
 
         return response
     
+
+    # This uses HuggingFace inference endpoint API for remote exection of the LLM.
+    # It has a free tier that works for development. The paid version will have 
+    # dedicated resources and higher rate limit.
+    def politicalQueryHFClientInferenceRemote(self, topic):
+        dotenv = dotenv_values(find_dotenv())
+        HF_INFERENCE_TOKEN = dotenv.get("HF_CLI_INFERENCE_TOKEN")
+        client = InferenceClient(
+            # "meta-llama/Llama-3.1-8B-Instruct", # Requires HF Pro subsricption.
+            # "meta-llama/Llama-2-7b-hf",
+            "meta-llama/Llama-3.2-3B-Instruct",
+            token=HF_INFERENCE_TOKEN,
+        )
+
+        prompt_tmpl = PromptTemplate(POLITICAL_LIB_OR_CON_SCORE_PROMPT)
+        the_query = prompt_tmpl.format(topic_of_prompt=topic)
+        response = client.text_generation(the_query)
+        return response
+
+    # This uses HuggingFace inference endpoint API for remote exection of the LLM.
+    # It has a free tier that works for development. The paid version will have 
+    # dedicated resources and higher rate limit.
+    def politicalQueryHFLlamaIndexInferenceRemote(self, topic):
+        dotenv = dotenv_values(find_dotenv())
+        HF_INFERENCE_TOKEN = dotenv.get("HF_CLI_INFERENCE_TOKEN")
+        llm = HuggingFaceInferenceAPI(
+            model_name= "meta-llama/Llama-3.1-8B-Instruct", # Requires HF Pro subsricption.
+            # model_name= "meta-llama/Llama-2-7b-hf",
+            temperature=0.0,
+            max_tokens=256,
+            token=HF_INFERENCE_TOKEN,  # Optional
+        )
+ 
+        prompt_tmpl = PromptTemplate(POLITICAL_LIB_OR_CON_SCORE_PROMPT)
+        the_query = prompt_tmpl.format(topic_of_prompt=topic)
+        # print(the_query)
+        # response = client.text_generation(the_query)
+        response = llm.complete(the_query)
+        # response = llm.complete("Hello, how are you?")
+        return response
+
+
     # Test wether the response string is telling us that the query engine could not fetch relevant documents.
     # Note that the query engine halucinates often and returns many false negatives.
     # A return type of True means revelant documents or sources were NOT found.
@@ -199,31 +267,39 @@ class LLMQueryEngine():
 # TODO: Put these in a seperate testing only file.
 def testWithTopic(topic: str):
     llmWithCitations = LLMQueryEngine()
-    response = llmWithCitations.politicalQueryWithCitationLocal(topic)
+    response = llmWithCitations.politicalQueryWithCitation(topic)
     return response
 
-def testGPU(topic: str):
+def testLocalGPU(topic: str):
 
     print('torch.cuda.is_available()')
     print(torch.cuda.is_available())
     print(cuda.current_device())
  
     llmWithCitations = LLMQueryEngine()
-    output = llmWithCitations.politicalQueryLocalWithGPU(topic, useHF=True)
+    output = llmWithCitations.politicalQueryWithGPULocal(topic, useHF=True)
 
     return output
 
+def testHF(topic: str):
+    llmWithCitations = LLMQueryEngine()
+    # resp = llmWithCitations.politicalQueryHFClientInferenceRemote('')
+    resp = llmWithCitations.politicalQueryHFLlamaIndexInferenceRemote('')
+    print(resp)
+    return resp
 
 if __name__ == "__main__":
     # Test topics
     # topic = "Barnes and Noble"
-    # topic = "Black Rifle Coffee"
+    topic = "Black Rifle Coffee"
     # topic = "BP"
     # topic = "Bud Light"
     # topic = 'Diddy'
     # topic = 'Jiffy Lube'
     # topic = 'Molson'
-    topic = 'Valvoline'
-    # resp = testWithTopic(topic)
-    resp = testGPU(topic)
+    # topic = 'Valvoline'
+    resp = testWithTopic(topic)
+    # resp = testLocalGPU(topic)
+    # print('\n' + str(resp) + '\n')
+    # resp = testHF(topic)
     print('\n' + str(resp) + '\n')
