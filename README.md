@@ -7,11 +7,11 @@ This app will answer one of a couple questions: what is the lean of a public fig
 
 (We are pro DEI btw..)
 
-### With Citation (why this imporves it)
+#### With Citation (why this imporves it)
 
 Instead of only giving one answer we can give the answer along with links to new articles or financial contribution data. This is comparable to the difference between asking ChatGPT and Perplexity. Perplexity will give and answer followed by a list of sources that the answer came from. In my opinion this is a way more compeling way to give an answer. It creates trust instead of telling the user to beleive the magic number with the assurance 'trust me bro its AI' The answer we give will make sense and be verifiable.
 
-### Without Citation
+#### Without Citation
 
 Making it work with the citations above is more challenging to implement and depends heavily on data quality. It is also more comutationaly expensive. Therefore as a fallback this will be able to answer without the citation. It is easier for the LLM to get this correct though it is objectively the worse way to answer.
 
