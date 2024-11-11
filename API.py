@@ -1,63 +1,87 @@
-import json
-from fastapi import FastAPI
+import Util
+from DataCache.CassandraDBCache import CassandraDBCache
+from DataClassWrappers.TopicInfo import TopicInfo
 from LLMQueryEngine import LLMQueryEngine
+from fastapi import FastAPI
 
 app = FastAPI()
 
 @app.get("/getPoliticalLeaningWithCitation/{query_topic}")
 async def getPoliticalLeaningWithCitation(query_topic):
+    # If this was already answered return the cached response and return
+    dbCache = CassandraDBCache(dev=True)
+    most_recent = dbCache.fetchInfoOnTopicMostRecent(query_topic)
+    if most_recent != None: # cached answer found.
+        print('returning cached response: ')
+        json = Util.escapedJsonFromTopicInfo(most_recent)
+        print(json)
+        return json
 
+    # Otherwise get the LLM response.
     llmWithCitations = LLMQueryEngine()
     query_topic_str = str(query_topic)
     print('Request received with topic: {query_topic}')
     print('Waiting....')
+    response = llmWithCitations.politicalQueryWithCitation(query_topic_str)
+    # Format the reponse and parse out the important information.
+    response_dataclass:TopicInfo = Util.parsePolitcalLeaingResponse(response, query_topic)
+ 
+    # Save to DB if a properly formatted answer.
+    if type(response_dataclass) is TopicInfo: # will be str or null if parse error.
+        print('Writing to DB now..')
+        dbCache.writeTopicInfoToDB(response_dataclass)
+    else: # If the answer cannot be parsed give back the original string.
+        return {'response': response_dataclass}
+    # Convert to json to give back to client.
+    
+    json = Util.escapedJsonFromTopicInfo(response_dataclass)
+    print()
+    print(json)
+    return json
 
-    resposne = llmWithCitations.politicalQueryWithCitationLocal(query_topic_str)
-    split = resposne.split('Lean:')
-
-    if len(split) > 1:
-        split = split[1]
-    else:
-        split = split[0]
-    split = split.split('Rating:')
-    leanStr = split[0]
-
-    split = split[1]
-    split = split.split('Context:')
-    ratingStr = split[0]
-
-    split = split[1]
-    split = split.split('Citations:')
-    contextStr = split[0]
-
-    if len(split) > 0:
-        citationStr = split[1]
-    else :
-        citationStr = 'Citation: None'
-
-    response = {
-        'lean': leanStr,
-        'number': ratingStr,
-        'context': contextStr,
-        'citation': citationStr
-    }
-
-    print(response)
-
-    return {"Response": response}
 
 # Will not return a citation based off of sources. Won't consider the documents gathered on possible topics.
 @app.get("/getPoliticalLeaning/{query_topic}")
 async def getPoliticalLeaningWithoutCitation(query_topic):
+    # If this was already answered return the cached response and return
+    dbCache = CassandraDBCache(dev=True)
+    most_recent = dbCache.fetchInfoOnTopicMostRecent(query_topic)
+    if most_recent != None: # cached answer found.
+        print('returning cached response: ')
+        json = Util.escapedJsonFromTopicInfo(most_recent)
+        print(json)
+        return json
+
     llmQueryEngine = LLMQueryEngine()
     query_topic_str = str(query_topic)
-    reposne = llmQueryEngine.politicalQueryLocal(query_topic_str)
-    return {"Response": reposne}
+    response = llmQueryEngine.politicalQueryWithOUTCiation(query_topic_str)
+    response_dataclass = Util.parsePolitcalLeaingResponse(response, query_topic, citation=False)
 
-# Faster gpu enabled version. Currently does not fetch citations from index
+    # Save to DB if a properly formatted answer.
+    if type(response_dataclass) is TopicInfo: 
+        dbCache.writeTopicInfoToDB(response_dataclass)
+    else:# If the answer cannot be parsed give back the original string.
+        return {'response': response_dataclass}
+    
+    json = Util.escapedJsonFromTopicInfo(response_dataclass)
+    print()
+    print(json)
+    return json
+
+
+# Gpu enabled version. Local only. Currently does not fetch citations from index
+# Note we wont cache local responses as they won't cost us as much to w.e.
 @app.get("/getPoliticalLeaningWithGPU/{query_topic}")
 async def getPoliticalLeaningWithoutCitationWithGPU(query_topic):
     llmQueryEngine = LLMQueryEngine()
     query_topic_str = str(query_topic)
-    reposne = llmQueryEngine.politicalQueryLocalWithGPU(query_topic_str)
-    return {"Response": reposne}
+    response = llmQueryEngine.politicalQueryWithGPULocal(query_topic_str)
+    response_dataclass = Util.parsePolitcalLeaingResponse(response, query_topic)
+    
+     # Save to DB if a properly formatted answer.
+    if response_dataclass is not TopicInfo:
+        return {'response': response_dataclass}
+     
+    json = Util.escapedJsonFromTopicInfo(response_dataclass)
+    print(json)
+    return json

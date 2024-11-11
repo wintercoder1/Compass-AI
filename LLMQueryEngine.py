@@ -48,6 +48,7 @@ class LLMQueryEngine():
             # llm=default_cpu_llama_local_llm,
             llm=llm_to_use,
         )
+        
         return
 
     #
@@ -78,7 +79,18 @@ class LLMQueryEngine():
     #
     # WithOUT citations. Long term it would be better for the citation model to be the default.
     # These methods wont't technically count as a RAG.
-    # These are mostly for testing. politicalQueryWithCitation and variants will make the get consumer facing app.
+    # These are mostly for testing. politicalQueryWithCitation and variants will make the get consumer facing app. 
+    def politicalQueryWithOUTCiation(self, topic):
+        prompt_tmpl = PromptTemplate(POLITICAL_LIB_OR_CON_SCORE_PROMPT)
+        the_query = prompt_tmpl.format(topic_of_prompt=topic)
+
+        llm = LLMConfig.configureHFLlamaIndexInferenceRemote()
+        response = llm.complete(the_query)
+
+        return str(response)
+    
+    # Local models. This means gguf files running on cpu or gpu.
+    # Mostly for curiousity. The remote endpoints are way way way faster.
     def politicalQueryLocal(self, topic):
         prompt_tmpl = PromptTemplate(POLITICAL_LIB_OR_CON_SCORE_PROMPT)
         the_query = prompt_tmpl.format(topic_of_prompt=topic)
@@ -147,9 +159,9 @@ def testLocalGPU(topic: str):
 if __name__ == "__main__":
     # Test topics
     # topic = "Barnes and Noble"
-    topic = "Black Rifle Coffee"
+    # topic = "Black Rifle Coffee"
     # topic = "BP"
-    # topic = "Bud Light"
+    topic = "Bud Light"
     # topic = 'Diddy'
     # topic = 'Jiffy Lube'
     # topic = 'Molson'

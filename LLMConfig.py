@@ -78,10 +78,8 @@ def configureHFLlamaIndexInferenceRemote():
     # used with the citation query engine class.
     llm = HuggingFaceInferenceAPI(
         model_name= "meta-llama/Llama-3.1-8B-Instruct",
-        # model_name= "meta-llama/Llama-2-7b-hf",
-        # model_name= "meta-llama/Llama-3.2-3B-Instruct",
-        # temperature=0.7,
-        max_tokens=100,
+        # temperature=0.1,
+        max_tokens=256,
         token=HF_INFERENCE_TOKEN,  # Optional
     )
     return llm
