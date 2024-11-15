@@ -1,6 +1,10 @@
 from cassandra.cluster import Cluster
 from cassandra.query import dict_factory
+from cassandra.auth import PlainTextAuthProvider
+from cassandra import ConsistencyLevel
+from dotenv import find_dotenv, dotenv_values
 from typing import Optional
+from ssl import SSLContext, PROTOCOL_TLSv1_2 , CERT_REQUIRED, CERT_NONE
 from DataCache import CqlCommands
 from DataClassWrappers.TopicInfo import TopicInfo
 from Util import topicInfoFromDict
@@ -11,12 +15,36 @@ class CassandraDBCache:
     DEV_LOCALHOST_URL = '127.0.0.1'
     DEV_PORT = '9042'
 
-    def __init__(self, dev=True) -> None:
-        # 
-        cluster = Cluster(
-            [self.DEV_LOCALHOST_URL], # By default connects to localhost.
-            port=self.DEV_PORT
-        )
+    def __init__(self, prod=False) -> None:
+        # Prod configuration
+        if prod:
+            dotenv = dotenv_values(find_dotenv())
+            PROD_URL = dotenv.get('CASSANDRA_KEY_SPACES_AWS_URL')
+            PROD_PORT = dotenv.get('CASSANDRA_KEY_SPACES_AWS_PORT')
+            AWS_CERT_PATH = dotenv.get('AWS_CERT_PATH_LOCAL')
+            # AWS_CERT_PATH = dotenv.get('AWS_CERT_PATH')
+            AWS_KEYSPACES_USER_NAME= dotenv.get('AWS_KEYSPACES_USER_NAME')
+            AWS_KEYSPACES_PASSWORD= dotenv.get('AWS_KEYSPACES_PASSWORD')
+            ## SSL for AWS cert.
+            ssl_context = SSLContext(PROTOCOL_TLSv1_2 )
+            # TODO: update this to actualy use cert lol.
+            ssl_context.verify_mode = CERT_NONE
+            # autprovider
+            auth_provider = PlainTextAuthProvider(username=AWS_KEYSPACES_USER_NAME, 
+                                                  password=AWS_KEYSPACES_PASSWORD
+                                                  )
+
+            cluster = Cluster(
+                [PROD_URL], # By default connects to localhost.
+                ssl_context=ssl_context, 
+                auth_provider=auth_provider, 
+                port=PROD_PORT
+            )
+        else:
+            cluster = Cluster(
+                [self.DEV_LOCALHOST_URL], # By default connects to localhost.
+                port=self.DEV_PORT
+            )
         self.session = cluster.connect()
         self.session.row_factory = dict_factory # returns rows as dict
         # Setup
@@ -25,8 +53,6 @@ class CassandraDBCache:
         self.session.execute(CqlCommands.CREATE_DEICHECK_KEYSPACE_WITH_REPLICATION)
         # Set keyspace.
         self.session.set_keyspace(CqlCommands.DEI_CHECK_KEYSPACE_NAME)
-        # Create custom type for storing answers.
-        self.session.execute(CqlCommands.CREATE_POLITICAL_LEANING_CUSTOMTYPE)
         # Create table that will store a list of answers for each topic.
         self.session.execute(CqlCommands.CREATE_POLITICAL_LEANING_TABLE)
         
@@ -35,7 +61,9 @@ class CassandraDBCache:
     def writeTopicInfoToDB(self, topicInfo: TopicInfo):
         # Write LLm answer to the applicate table.
         # ie political leaning to political leaning table. dei or wokeness to respective table.
+        # Cassandra managed service requires  local quorum consistency level.
         INSERT = self.session.prepare(CqlCommands.INSERT_POLITICAL_LEANING_INFO_PREPARED)
+        INSERT.consistency_level = ConsistencyLevel.LOCAL_QUORUM
         self.session.execute(INSERT, 
                              (
                                 topicInfo.normalized_topic_name, 
@@ -54,7 +82,7 @@ class CassandraDBCache:
 
     # Returns one most recent answe ron topic.
     def fetchInfoOnTopicMostRecent(self, normalized_topic_name: str ) -> Optional[TopicInfo]: #TopicInfo: #Optional[DataClassWrappers.TopicInfo]:
-        # search respective table for an answer relating to the topic
+        # search respective table for an answer relating to the topic.
         FETCH = self.session.prepare(CqlCommands.FETCH_POLITICAL_LEANING_INFO_MOST_RECENT_PREPARED)
         rows = self.session.execute(FETCH, (normalized_topic_name, ) )
         if not rows:

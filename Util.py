@@ -17,13 +17,10 @@ def parsePolitcalLeaingResponse(responseStr: str, topic: str, citation: bool = T
             split = split[1]
         else:
             no_lean = True
-        # print('before rating splipt: ' + str(no_lean) + '  ' + str(split))
 
         # Rating.
         if not no_lean: ## keep the happy path in the first if and out of the elses
             split = split.split('rating:')
-            # print('after rating split no lean: ' + str(split) )
-            # print(type(split))
         else :
             split = split[0].split('rating:') 
 
@@ -34,12 +31,11 @@ def parsePolitcalLeaingResponse(responseStr: str, topic: str, citation: bool = T
             leanStr = split[0].split(':')[0]
             split = split[0]
 
-
         # Context
         split = split.split('context:')
         ratingStr = split[0]
         split = split[1]
-
+      
         # Citations.
         if citation:
             split = split.split('citations:')
@@ -76,8 +72,8 @@ def parsePolitcalLeaingResponse(responseStr: str, topic: str, citation: bool = T
     # If output code wont format correctly just return orignial input.
     except IndexError:
         return responseStr
-    except Exception:
-        return None
+    # except Exception:
+    #     return None
  
 # Test wether the response string is telling us that the query engine could not fetch relevant documents.
 # Note that the query engine halucinates often and returns many false negatives.
@@ -107,7 +103,7 @@ def takeOutNonNumeric(ini_string: str) -> str:
 
 def normalizeTopicName(topic: str) -> str:
     topic = topic.lower() # lower case the string.
-    topic = topic.join(s.split()) # take out all whitespace.
+    topic = "".join(topic.split()) # take out all whitespace.
     return topic
 
 # Adding this as a constructor to topic info is weird. Idk python is the worst.

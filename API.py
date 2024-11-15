@@ -6,7 +6,7 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
-isProd = False
+isProd = True
 
 @app.get("/getPoliticalLeaningWithCitation/{query_topic}")
 async def getPoliticalLeaningWithCitation(query_topic):
@@ -46,7 +46,7 @@ async def getPoliticalLeaningWithCitation(query_topic):
 @app.get("/getPoliticalLeaning/{query_topic}")
 async def getPoliticalLeaningWithoutCitation(query_topic):
     # If this was already answered return the cached response and return
-    dbCache = CassandraDBCache(dev=isProd)
+    dbCache = CassandraDBCache(prod=isProd)
     most_recent = dbCache.fetchInfoOnTopicMostRecent(query_topic)
     if most_recent != None: # cached answer found.
         print('returning cached response: ')
