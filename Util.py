@@ -126,11 +126,11 @@ def topicInfoFromDict(row_dict: dict) -> TopicInfo:
         )
         return topicInfo
 
-def escapedJsonFromTopicInfo(topicInfo: TopicInfo):
+def escapedJsonFromTopicInfo(topicInfo: TopicInfo, cached:bool):
     original_json = topicInfo.to_json()
-    print('returning cached response: ')
     # byt defalut this included unneeded escape backslashes. We will take those out.
     epsg_json = json.loads(original_json.replace("\"", '"'))
+    epsg_json['cached_response'] = cached
     return epsg_json
 
 ##   

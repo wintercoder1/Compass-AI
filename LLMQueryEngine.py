@@ -37,8 +37,8 @@ class LLMQueryEngine():
         bge_small_embed_model = HuggingFaceEmbedding(model_name='BAAI/bge-small-en-v1.5')
         Settings.embed_model = bge_small_embed_model
 
-        self.news_document_index = DataIngestion.createNewsDocumentsIndex(reCreateIndex=True)
-        # self.news_document_index = DataIngestion.createNewsDocumentsIndex(reCreateIndex=False)
+        # self.news_document_index = DataIngestion.createNewsDocumentsIndex(reCreateIndex=True)
+        self.news_document_index = DataIngestion.createNewsDocumentsIndex(reCreateIndex=False)
         
         self.citation_query_engine = CitationQueryEngine.from_args(
             self.news_document_index,
