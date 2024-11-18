@@ -1,8 +1,10 @@
-import Util
+from fastapi import FastAPI
+import uvicorn
 from DataCache.CassandraDBCache import CassandraDBCache
 from DataClassWrappers.TopicInfo import TopicInfo
 from LLMQueryEngine import LLMQueryEngine
-from fastapi import FastAPI
+import Util
+
 
 app = FastAPI()
 
@@ -10,6 +12,7 @@ isProd = True
 
 @app.get("/getPoliticalLeaningWithCitation/{query_topic}")
 async def getPoliticalLeaningWithCitation(query_topic, overrideCache: bool | None = None):
+    # return {"message": "Hello, FastAPI!"}
     if overrideCache:
         override = overrideCache
     else:
@@ -98,3 +101,7 @@ def withCitation(query_topic: str, overrideCache: bool = False):
     print()
     print(json)
     return json
+
+# Use this ewith the uvicorn web server.
+if __name__ == "__main__":
+    uvicorn.run('API:app', host="127.0.0.1", port=8000, reload=True)
