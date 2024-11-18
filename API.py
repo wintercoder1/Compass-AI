@@ -104,4 +104,4 @@ def withCitation(query_topic: str, overrideCache: bool = False):
 
 # Use this ewith the uvicorn web server.
 if __name__ == "__main__":
-    uvicorn.run('API:app', host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run('API:app', host="0.0.0.0", port=8000, reload=True)
