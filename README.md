@@ -73,3 +73,21 @@ This will launch the server with the endpoint: getPoliticalLeaningWithCitation/{
 
 Replace query topic with whatever you want to know more about polically for example a get request on
 {base_url}/getPoliticalLeaningWithCitation/Valvline will tell you about what Valvoline's political leaning is and who they have donated to.
+
+## API Documentation
+
+#### http://{server_ip}/getPoliticalLeaningWithCitation/{query_topic}
+Gets the poltical lean of a person or company. It will include citations from the new data in the response. (citation accuracy will improve soon..)
+
+
+##### http://{server_ip}/getPoliticalLeaning/{query_topic}
+Gets the poltical lean of a person or company. No citations.
+
+
+Returns:
+
+topic: The topic of the query. ex: Jiffy lube or Valvoline
+lean: The direction of the politcal lean. Potential values are Liberal, conservative or neutral
+rating: The strength of the lean on a scale of 1 - 5.
+context: The AI powered explaination of why the lean and rating are what they are. This is important because it builds trust rather than making the user trust only the number.
+citation: Text from news sources (If citation endpoint used. Will be none otherwise.)
