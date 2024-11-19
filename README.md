@@ -80,7 +80,7 @@ Replace query topic with whatever you want to know more about polically for exam
 Gets the poltical lean of a person or company. It will include citations from the new data in the response. (citation accuracy will improve soon..)
 
 
-##### {server_ip}/getPoliticalLeaning/{query_topic}
+#### {server_ip}/getPoliticalLeaning/{query_topic}
 Gets the poltical lean of a person or company. No citations.
 
 
