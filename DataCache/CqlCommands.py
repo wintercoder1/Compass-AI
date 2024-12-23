@@ -30,6 +30,15 @@ INSERT_POLITICAL_LEANING_INFO_PREPARED = """
     VALUES (?, ?, ?, ?, ?, ?, ?);
     """
 
-FETCH_POLITICAL_LEANING_INFO = 'SELECT * FROM deicheck.political_leaning;'
-FETCH_POLITICAL_LEANING_INFO_PREPARED = 'SELECT * FROM deicheck.political_leaning WHERE normalized_topic_name = ?;'
-FETCH_POLITICAL_LEANING_INFO_MOST_RECENT_PREPARED = 'SELECT * FROM deicheck.political_leaning WHERE normalized_topic_name = ? ORDER BY timestamp DESC LIMIT 1;'
+FETCH_POLITICAL_LEANING_INFO = """
+    SELECT * FROM deicheck.political_leaning;
+    """
+FETCH_POLITICAL_LEANING_INFO_PREPARED = """    
+    SELECT * FROM deicheck.political_leaning WHERE normalized_topic_name = ?;
+    """
+FETCH_POLITICAL_LEANING_INFO_MOST_RECENT_PREPARED = """
+    SELECT * FROM deicheck.political_leaning WHERE normalized_topic_name = ? ORDER BY timestamp DESC LIMIT 1;
+    """
+
+# CONSISTENCY_LOCAL_QUORUM = 'CONSISTENCY LOCAL_QUORUM;'
+# CONSISTENCY_LOCAL_ONE = 'CONSISTENCY LOCAL_ONE;'

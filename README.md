@@ -26,7 +26,7 @@ Topics with citation support:
  &mdash; Quiktrip\
  &mdash; Taylor Swift\
  &mdash; Valvoline\
- &mdash; Random collection of companies that gave financial contributions to Republicans or Democrats in middle of 2024\
+ &mdash; Random collection of companies that gave financial contributions to Republicans or Democrats in middle of 2024
 
  .... and many more coming soon
  
@@ -36,16 +36,18 @@ Making it work with the citations above is more challenging to implement and dep
 
 ## Instructions
 
+### Run Locally
+
 Bring your own LLM with weights saved in .gguf format. Place that in a folder in the main directory called weights.
 
 One recomendation is the Llama Instruct fine tuned model. It can be found here: https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct. 
 
-### MacOS/Linux
+#### MacOS/Linux
 Begin the FastAPI server with the command:
 
 fastapi dev API.py
 
-### GPU acceleration on Windows
+#### GPU acceleration on Windows
 
 In addition to the dependencies in requirements.txt we will need to install Torch with CUDA enabled:
 
@@ -67,6 +69,10 @@ To start the FastAPI server to work on Windows the follow command will need to b
 uvicorn API:app --reload
 
 Note: This is a different command than on MacOS/Linux
+
+### Run with remote inference API
+
+Get a hugging Face API key. Put it in a .env file in the root directory. Put it in a variable called: HF_CLI_INFERENCE_TOKEN. The api enpoints without the word local in their name will work this way.
 
 ## Once setup is Complete
 This will launch the server with the endpoint: getPoliticalLeaningWithCitation/{query_topic}
