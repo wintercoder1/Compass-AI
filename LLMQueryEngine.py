@@ -2,7 +2,7 @@ import DataIngestion
 import LLMConfig
 import Util
 from dotenv import find_dotenv, dotenv_values
-from PromptTemplates import POLITICAL_LIB_OR_CON_SCORE_PROMPT
+from PromptTemplates import POLITICAL_LIB_OR_CON_SCORE_PROMPT, DEI_FRIENDLY_SCORE_PROMPT
 import torch
 from torch import cuda
 from huggingface_hub import InferenceClient
@@ -66,7 +66,7 @@ class LLMQueryEngine():
         # then run a regular old llm query that will not return a citation or sources for its answer.
         # TODO: query the index on the topic first and then only run one of these once.
         if (Util.indexedInfoNotConnectedToTopic(responseStr)):
-            response = self.politicalQueryWithOUTCiation(topic)
+            response = self.politicalQueryWithOUTCitation(topic)
             citation_string = '\nCitations: None'
             responseStr = str(response) + citation_string
         else:
@@ -80,7 +80,7 @@ class LLMQueryEngine():
     # WithOUT citations. Long term it would be better for the citation model to be the default.
     # These methods wont't technically count as a RAG.
     # These are mostly for testing. politicalQueryWithCitation and variants will make the get consumer facing app. 
-    def politicalQueryWithOUTCiation(self, topic):
+    def politicalQueryWithOUTCitation(self, topic):
         prompt_tmpl = PromptTemplate(POLITICAL_LIB_OR_CON_SCORE_PROMPT)
         the_query = prompt_tmpl.format(topic_of_prompt=topic)
 
@@ -132,6 +132,14 @@ class LLMQueryEngine():
 
         return response
 
+    def deiFriendlinessRatinglQueryWithOUTCitation(self, topic):
+            prompt_tmpl = PromptTemplate(DEI_FRIENDLY_SCORE_PROMPT)
+            the_query = prompt_tmpl.format(topic_of_prompt=topic)
+
+            llm = LLMConfig.configureHFLlamaIndexInferenceRemote()
+            response = llm.complete(the_query)
+
+            return str(response)
 
 
 #
@@ -142,6 +150,11 @@ class LLMQueryEngine():
 def testWithTopic(topic: str):
     llmWithCitations = LLMQueryEngine()
     response = llmWithCitations.politicalQueryWithCitation(topic)
+    return response
+
+def testWithTopicDEI(topic: str):
+    llmWithCitations = LLMQueryEngine()
+    response = llmWithCitations.deiFriendlinessRatinglQueryWithOUTCitation(topic)
     return response
 
 def testLocalGPU(topic: str):
@@ -161,12 +174,14 @@ if __name__ == "__main__":
     # topic = "Barnes and Noble"
     # topic = "Black Rifle Coffee"
     # topic = "BP"
-    topic = "Bud Light"
-    # topic = 'Diddy'
+    # topic = "Bud Light"
     # topic = 'Jiffy Lube'
     # topic = 'Molson'
     # topic = 'Valvoline'
-    resp = testWithTopic(topic)
+    # topic = 'Diddy'
+    topic = 'Ghislaine Maxwell'
+    # resp = testWithTopic(topic)
+    resp = testWithTopicDEI(topic)
     # resp = testLocalGPU(topic)
     # print('\n' + str(resp) + '\n')
     print('\n' + str(resp) + '\n')

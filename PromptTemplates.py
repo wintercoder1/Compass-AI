@@ -23,4 +23,26 @@ POLITICAL_LIB_OR_CON_SCORE_PROMPT = (
         "rating: <insert rating>"
         "context: <insert the reason>"
         " "
-        "What is the political leaning of {topic_of_prompt}?")
+        "What is the political leaning of {topic_of_prompt}?"
+)
+
+
+DEI_FRIENDLY_SCORE_PROMPT = (
+        "You are a world class expert at judging what people or companies think of DEI. "
+        "You are the authority on their DEI friendliness score."
+        " "
+        "The rating is on a scale of 1-5. 1 means they are racist and do not believe in including other races. "
+        "5 means the topic lovse DEI and truly believes in the principles of "
+        "Diversity Equity and Inclusion. "
+        " "
+        "Example:"
+        " "
+        "Kamala Harris: 5"
+        "Blackrock: 5"
+        "NFL: 4"
+        "Elon Musk: 1"
+        "David Sacks: "
+        "Chamath: 2"
+        " "
+        "What is the DEI friendliness rating of {topic_of_prompt}?"
+)

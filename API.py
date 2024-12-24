@@ -32,6 +32,23 @@ async def getPoliticalLeaningWithoutCitation(query_topic, overrideCache: bool | 
                                                   withCitation=False)
     return json
 
+@app.get("/getDEIFriendlinessScore/{query_topic}")
+async def getDEIFriendlinessScore(query_topic, overrideCache: bool | None = None):
+    #
+    # if overrideCache:
+    #     override = overrideCache
+    # else:
+    #     override = False
+    override = False
+
+    # json = CoreLogic.parseRequestAndCompleteQuery(query_topic, 
+    #                                               overrideCache=override, 
+    #                                               withCitation=False)
+    json = CoreLogic.parseRequestAndCompleteDEIQuery(query_topic, 
+                                                     overrideCache=override, 
+                                                     withCitation=False)
+    return json
+
 # GPU enabled version. Local only. Currently does not fetch citations from index
 # Note we wont cache local responses as they won't cost us as much to w.e.
 @app.get("/getPoliticalLeaningWithGPU/{query_topic}")
