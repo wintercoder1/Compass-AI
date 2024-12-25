@@ -80,21 +80,30 @@ This will launch the server with the endpoint: getPoliticalLeaningWithCitation/{
 Replace query topic with whatever you want to know more about polically for example a get request on
 {base_url}/getPoliticalLeaningWithCitation/Valvline will tell you about what Valvoline's political leaning is and who they have donated to.
 
+
 ## API Documentation
+
 
 ### DEI Friendliness Queries
 
 #### getDEIFriendlinessScore/{query_topic}
 
+Gets the DEI friendliness score of a person or company.
+
 Returns:
 
 topic: The topic of the query. ex: Ghislaine Maxwell or Rob Gronkowski
+
 rating: The level of DEI Friendliness on a scale of 1 - 5.
+
 context: The AI powered explaination of why the DEI score is what it is. This is important because it builds trust rather than making the user trust only the number.
+
 
 #### getDEIFriendlinessScoreWithCitation/{query_topic}
 
 Coming soon..
+
+
 
 ### Political Leaning Queries
 
@@ -109,7 +118,11 @@ Gets the poltical lean of a person or company. It will include citations from th
 Returns:
 
 topic: The topic of the query. ex: Jiffy lube or Valvoline
+
 lean: The direction of the politcal lean. Potential values are Liberal, conservative or neutral
+
 rating: The strength of the lean on a scale of 1 - 5.
+
 context: The AI powered explaination of why the lean and rating are what they are. This is important because it builds trust rather than making the user trust only the number.
+
 citation: Text from news sources (If citation endpoint used. Will be none otherwise.)
