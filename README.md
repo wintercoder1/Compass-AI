@@ -82,12 +82,28 @@ Replace query topic with whatever you want to know more about polically for exam
 
 ## API Documentation
 
-#### {server_ip}/getPoliticalLeaningWithCitation/{query_topic}
-Gets the poltical lean of a person or company. It will include citations from the new data in the response. (citation accuracy will improve soon..)
 
 
-#### {server_ip}/getPoliticalLeaning/{query_topic}
+#### getDEIFriendlinessScore/{query_topic}
+
+Returns:
+
+topic: The topic of the query. ex: Ghislaine Maxwell or Rob Gronkowski
+rating: The level of DEI Friendliness on a scale of 1 - 5.
+context: The AI powered explaination of why the DEI score is what it is. This is important because it builds trust rather than making the user trust only the number.
+
+#### getDEIFriendlinessScoreWithCitation/{query_topic}
+
+Coming soon..
+
+### Political Leaning Queries
+
+#### getPoliticalLeaning/{query_topic}
 Gets the poltical lean of a person or company. No citations.
+
+
+#### getPoliticalLeaningWithCitation/{query_topic}
+Gets the poltical lean of a person or company. It will include citations from the new data in the response. (citation accuracy will improve soon..)
 
 
 Returns:
