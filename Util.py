@@ -1,9 +1,11 @@
 from DataClassWrappers.TopicInfo import TopicInfo
 import json
 import time
+from QueryTypeEnum import QueryType
 
 # This is incredibly hacky and not the long term solution. Its only temporary.
 # I mean it seriously. This is terrible code and the wrong way to do this. 
+# This code is terrible. For sure rewrite.
 # TODO: Rewrite once you get the time. Truly for real pls do.
 # TODO: Use dataframes to format the LLM response.
 def parsePolitcalLeaingResponse(responseStr: str, topic: str, citation: bool = True) -> TopicInfo | str:
@@ -75,6 +77,66 @@ def parsePolitcalLeaingResponse(responseStr: str, topic: str, citation: bool = T
     # except Exception:
     #     return None
  
+
+def parsePolitcalLeaingResponseDEI(responseStr: str, topic: str, citation: bool = True) -> TopicInfo | str:
+    try:
+         
+        split = responseStr.split('rating:') 
+
+        if len(split) > 1:
+            leanStr = split[0]
+            split = split[1]
+        else:
+            leanStr = split[0].split(':')[0]
+            split = split[0]
+
+        # Context
+        # Sometimes the cotext is not included idk why.
+        split = split.split(':')
+        ratingStr = split[0]
+        split = split[1]
+      
+        # Citations.
+        if citation:
+            split = split.split('citations:')
+            if len(split) > 1:
+                contextStr = split[0]
+                citationStr = split[1]
+            else :
+                split = split[0].split('Citations:')
+                contextStr = split[0]
+                if len(split) > 1:
+                    citationStr = split[1]
+                else:
+                    citationStr = 'none'
+        else:
+            contextStr = split
+            citationStr = 'none'
+        
+        # Wrap up in data class.
+        current_timestamp = createTimeStamp()
+        rating_int = int(takeOutNonNumeric(ratingStr))
+
+        topicInfo = TopicInfo(
+            timestamp = current_timestamp,
+            normalized_topic_name = normalizeTopicName(topic),
+            topic = topic,
+            lean = leanStr,
+            rating = rating_int,
+            context = contextStr,
+            citation = citationStr 
+        )
+
+        return topicInfo
+
+    # If output code wont format correctly just return orignial input.
+    except IndexError:
+        return responseStr
+    # except Exception:
+    #     return None
+
+
+
 # Test wether the response string is telling us that the query engine could not fetch relevant documents.
 # Note that the query engine halucinates often and returns many false negatives.
 # A return type of True means revelant documents or sources were NOT found.
@@ -107,11 +169,14 @@ def normalizeTopicName(topic: str) -> str:
     return topic
 
 # Adding this as a constructor to topic info is weird. Idk python is the worst.
-def topicInfoFromDict(row_dict: dict) -> TopicInfo:
+def topicInfoFromDict(row_dict: dict, queryType: QueryType = QueryType.POLITCAL_LEANING) -> TopicInfo:
         current_timestamp = row_dict["timestamp"]
         normalized_topic_name = row_dict["normalized_topic_name"]
         topic = row_dict["topic"]
-        lean = row_dict['lean']
+        if queryType == QueryType.POLITCAL_LEANING:
+            lean = row_dict['lean']
+        elif queryType == QueryType.DEI_FRIENDLINESS:
+            lean = 'N/A'
         rating = row_dict['rating']
         context = row_dict['context']
         citation = row_dict['citation']
@@ -126,10 +191,14 @@ def topicInfoFromDict(row_dict: dict) -> TopicInfo:
         )
         return topicInfo
 
-def escapedJsonFromTopicInfo(topicInfo: TopicInfo, cached:bool):
+def escapedJsonFromTopicInfo(topicInfo: TopicInfo, queryType: QueryType, cached:bool):
     original_json = topicInfo.to_json()
     # byt defalut this included unneeded escape backslashes. We will take those out.
     epsg_json = json.loads(original_json.replace("\"", '"'))
+    if queryType == QueryType.POLITCAL_LEANING:
+        epsg_json['query_type'] = 'Political Leaning'
+    elif queryType == QueryType.DEI_FRIENDLINESS:
+        epsg_json['query_type'] = 'DEI Friendliness'
     epsg_json['cached_response'] = cached
     return epsg_json
 

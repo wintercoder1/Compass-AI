@@ -13,7 +13,10 @@ def parseRequestAndCompleteQuery(query_topic: str, overrideCache:bool=False, wit
     # If not opted out of Cache response
     if not overrideCache:
         # If this was already answered return the cached response and return
-        most_recent = dbCache.fetchInfoOnTopicMostRecent(query_topic)
+        # Fetch based on normalized topic name. This is meant to reduce deplicates for queries in the DB.
+        # It's not a perfect method and that will need to done with something else.
+        nomralized_query_topic = Util.normalizeTopicName(query_topic)
+        most_recent = dbCache.fetchInfoOnTopicMostRecent(nomralized_query_topic)
         if most_recent != None: # cached answer found.
             print('returning cached response: ')
             json = Util.escapedJsonFromTopicInfo(most_recent, cached=True)
@@ -49,21 +52,23 @@ def parseRequestAndCompleteQuery(query_topic: str, overrideCache:bool=False, wit
 
     return json
 
-
+# TODO: This shares a ton of logic with 
 def parseRequestAndCompleteDEIQuery(query_topic: str, overrideCache:bool=False, withCitation:bool=True):
 
-    # dbCache = CassandraDBCache(prod=isProd)
+    dbCache = CassandraDBCache(prod=isProd)
     # # If not opted out of Cache response
-    # if not overrideCache:
-    #     # If this was already answered return the cached response and return
-    #     most_recent = dbCache.fetchInfoOnTopicMostRecent(query_topic)
-    #     if most_recent != None: # cached answer found.
-    #         print('returning cached response: ')
-    #         json = Util.escapedJsonFromTopicInfo(most_recent, cached=True)
-    #         print(json)
-    #         return json
-    #     else:
-    #         print('not found!')
+    if not overrideCache:
+        # If this was already answered return the cached response and return
+        nomralized_query_topic = Util.normalizeTopicName(query_topic)
+        print('normalized: ' + nomralized_query_topic)
+        most_recent = dbCache.fetchInfoOnTopicMostRecent(nomralized_query_topic, queryType=QueryType.DEI_FRIENDLINESS)
+        if most_recent != None: # cached answer found.
+            print('returning cached response: ')
+            json = Util.escapedJsonFromTopicInfo(most_recent, queryType=QueryType.DEI_FRIENDLINESS, cached=True)
+            print(json)
+            return json
+        else:
+            print('not found!')
 
     # Otherwise get the LLM response.
     llmWithCitations = LLMQueryEngine()
@@ -71,10 +76,6 @@ def parseRequestAndCompleteDEIQuery(query_topic: str, overrideCache:bool=False, 
     print('Request received with topic: {query_topic}')
     print('Waiting....')
     response = llmWithCitations.deiFriendlinessRatinglQueryWithOUTCitation(query_topic_str)
-    # if withCitation:
-    #     response = llmWithCitations.politicalQueryWithCitation(query_topic_str)
-    # else:
-    #     response = llmWithCitations.politicalQueryWithOUTCitation(query_topic_str)
     # Format the reponse and parse out the important information.
     response_dataclass:TopicInfo = Util.parsePolitcalLeaingResponseDEI(response, query_topic, citation=False)
     print(response_dataclass)
@@ -82,7 +83,7 @@ def parseRequestAndCompleteDEIQuery(query_topic: str, overrideCache:bool=False, 
     # Save to DB if a properly formatted answer.
     if type(response_dataclass) is TopicInfo: # will be str or null if parse error.
         print('Writing to DB now..')
-        # dbCache.writeTopicInfoToDB(response_dataclass)
+        dbCache.writeTopicInfoToDB_DEI(response_dataclass)
     else: # If the answer cannot be parsed give back the original string.
         return {'response': response_dataclass}
     # Convert to json to give back to client.

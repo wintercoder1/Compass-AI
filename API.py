@@ -35,15 +35,12 @@ async def getPoliticalLeaningWithoutCitation(query_topic, overrideCache: bool | 
 @app.get("/getDEIFriendlinessScore/{query_topic}")
 async def getDEIFriendlinessScore(query_topic, overrideCache: bool | None = None):
     #
-    # if overrideCache:
-    #     override = overrideCache
-    # else:
-    #     override = False
-    override = False
+    if overrideCache:
+        override = overrideCache
+    else:
+        override = False
+    print('Override: ' + str(override))
 
-    # json = CoreLogic.parseRequestAndCompleteQuery(query_topic, 
-    #                                               overrideCache=override, 
-    #                                               withCitation=False)
     json = CoreLogic.parseRequestAndCompleteDEIQuery(query_topic, 
                                                      overrideCache=override, 
                                                      withCitation=False)
