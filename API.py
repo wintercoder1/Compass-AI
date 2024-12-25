@@ -54,6 +54,23 @@ async def getPoliticalLeaningWithoutCitationWithGPU(query_topic):
     return json
 
 
+#
+# Cached responses.
+#
+
+# Returns all previoulsy calculated political leanings.
+@app.get("/getCachedPolitcalLeanings")
+async def getCachedPolitcalLeaningsAPI():
+    json = CoreLogic.getCachedPolitcalLeaningsEntries()
+    return json
+
+# Returns all previoulsy calculated DEI friendlines scores.
+@app.get("/getCachedDEIScores")
+async def getCachedDEIFriendlinessScoresAPI():
+    json = CoreLogic.getCachedDEIFriendlinessScoresEntries()
+    return json
+
+
 # Use this ewith the uvicorn web server.
 if __name__ == "__main__":
     uvicorn.run('API:app', host="127.0.0.1", port=8000, reload=True)

@@ -7,6 +7,7 @@ from typing import Optional
 from ssl import SSLContext, PROTOCOL_TLSv1_2 , CERT_REQUIRED, CERT_NONE
 from DataCache import CqlCommands
 from DataClassWrappers.TopicInfo import TopicInfo
+from QueryTypeEnum import QueryType
 from Util import topicInfoFromDict
 
 # TODO: write wrapers for connection to cloud hosted Cassandra.
@@ -54,7 +55,9 @@ class CassandraDBCache:
         # Set keyspace.
         self.session.set_keyspace(CqlCommands.DEI_CHECK_KEYSPACE_NAME)
         # Create table that will store a list of answers for each topic.
+        # Political leaning DEI and Wokeness will all be seperate tables.
         self.session.execute(CqlCommands.CREATE_POLITICAL_LEANING_TABLE)
+        self.session.execute(CqlCommands.CREATE_DEI_CHECK_TABLE)
         
 
     # Write:
@@ -76,26 +79,59 @@ class CassandraDBCache:
                             )
         )
         return
+    
+    def writeTopicInfoToDB_DEI(self, topicInfo: TopicInfo):
+        # Write LLm answer to the applicate table.
+        # ie political leaning to political leaning table. dei or wokeness to respective table.
+        # Cassandra managed service requires  local quorum consistency level.
+        INSERT = self.session.prepare(CqlCommands.INSERT_DEI_CHECK_INFO_PREPARED)
+        INSERT.consistency_level = ConsistencyLevel.LOCAL_QUORUM
+        print(topicInfo)
+        self.session.execute(INSERT, 
+                             (
+                                topicInfo.normalized_topic_name, 
+                                topicInfo.timestamp, 
+                                topicInfo.topic, 
+                                topicInfo.rating, 
+                                topicInfo.context, 
+                                topicInfo.citation
+                            )
+        )
+        return
 
     # Read:
     # Fetch answers.
 
-    # Returns one most recent answe ron topic.
-    def fetchInfoOnTopicMostRecent(self, normalized_topic_name: str ) -> Optional[TopicInfo]: #TopicInfo: #Optional[DataClassWrappers.TopicInfo]:
+    # Returns one most recent answer on topic.
+    def fetchInfoOnTopicMostRecent(self, normalized_topic_name: str, queryType: QueryType = QueryType.POLITCAL_LEANING) -> Optional[TopicInfo]: #TopicInfo: #Optional[DataClassWrappers.TopicInfo]:
+        
         # search respective table for an answer relating to the topic.
-        FETCH = self.session.prepare(CqlCommands.FETCH_POLITICAL_LEANING_INFO_MOST_RECENT_PREPARED)
+        if queryType == QueryType.POLITCAL_LEANING:
+            FETCH = self.session.prepare(CqlCommands.FETCH_POLITICAL_LEANING_INFO_MOST_RECENT_PREPARED)
+        elif queryType == QueryType.DEI_FRIENDLINESS:
+            FETCH = self.session.prepare(CqlCommands.FETCH_DEI_FRIENDLINESS_INFO_MOST_RECENT_PREPARED)
+
         rows = self.session.execute(FETCH, (normalized_topic_name, ) )
         if not rows:
             return None
-        return topicInfoFromDict(row_dict=rows[0]) 
+        return topicInfoFromDict(row_dict=rows[0], queryType=queryType) 
     
     # Returns all answers ever for topic.
-    def fetchInfoOnTopic(self, normalized_topic_name: str) -> list:
-        FETCH = self.session.prepare(CqlCommands.FETCH_POLITICAL_LEANING_INFO_PREPARED)
+    def fetchInfoOnTopic(self, normalized_topic_name: str, queryType: QueryType = QueryType.POLITCAL_LEANING) -> list:
+        if queryType == QueryType.POLITCAL_LEANING:
+            FETCH = self.session.prepare(CqlCommands.FETCH_POLITICAL_LEANING_INFO_PREPARED)
+        elif queryType == QueryType.DEI_FRIENDLINESS:
+            FETCH = self.session.prepare(CqlCommands.FETCH_DEI_FRIENDLINESS_INFO_PREPARED)
         rows = self.session.execute(FETCH, (normalized_topic_name, ) )
         return rows
     
     # Returns all answers on all topics saved in database.
-    def fetchInfoAllTopics(self) -> list:
-        row = self.session.execute(CqlCommands.FETCH_POLITICAL_LEANING_INFO)
-        return row
+    def fetchInfoAllTopics(self, queryType: QueryType) -> list:
+        if queryType == QueryType.POLITCAL_LEANING:
+            COMMAND = CqlCommands.FETCH_POLITICAL_LEANING_INFO
+        elif queryType == QueryType.DEI_FRIENDLINESS:
+            COMMAND = CqlCommands.FETCH_DEI_FRIENDLINESS_INFO
+        rows = self.session.execute(COMMAND)
+        print('rows')
+        print(rows)
+        return rows

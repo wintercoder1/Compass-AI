@@ -108,3 +108,42 @@ def getPoliticalLeaningWithoutCitationWithGPU(query_topic):
     json = Util.escapedJsonFromTopicInfo(response_dataclass)
     print(json)
     return json
+
+
+def getCachedPolitcalLeaningsEntries():
+    return getCachedEntries(QueryType.POLITCAL_LEANING)
+
+def getCachedDEIFriendlinessScoresEntries():
+    return getCachedEntries(QueryType.DEI_FRIENDLINESS)
+
+def getCachedEntries(queryType: QueryType):
+    dbCache = CassandraDBCache(prod=isProd)
+    row_list = dbCache.fetchInfoAllTopics(queryType=queryType)
+
+    normalized_topic_ids_to_item_map = {}
+    for item in row_list:
+        n_id = item['normalized_topic_name']
+        # If seen before take only the one with most recent timestamp.
+        # If lesser timestmap just skip.
+        if n_id in normalized_topic_ids_to_item_map:
+            prev = normalized_topic_ids_to_item_map[n_id]
+            if prev['timestamp'] < item['timestamp']:
+                continue
+        normalized_topic_ids_to_item_map[n_id] = item
+
+    # normalized topic name could confused end users.
+    for _, item in enumerate(normalized_topic_ids_to_item_map.values()):
+        del item['normalized_topic_name']
+
+    item_list = list(normalized_topic_ids_to_item_map.values())
+    return item_list
+
+if __name__ == "__main__":
+    testIsProd = True
+    dbCache = CassandraDBCache(prod=testIsProd)
+    # test DB
+    pol_leanings = dbCache.fetchInfoAllTopics(queryType=QueryType.POLITCAL_LEANING)
+    print(pol_leanings)
+    # DEI
+    # dei_friendliness = dbCache .fetchInfoAllTopics(queryType=QueryType.DEI_FRIENDLINESS)
+    # print(dei_friendliness)
