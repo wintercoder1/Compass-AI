@@ -19,7 +19,7 @@ def parseRequestAndCompleteQuery(query_topic: str, overrideCache:bool=False, wit
         most_recent = dbCache.fetchInfoOnTopicMostRecent(nomralized_query_topic)
         if most_recent != None: # cached answer found.
             print('returning cached response: ')
-            json = Util.escapedJsonFromTopicInfo(most_recent, cached=True)
+            json = Util.escapedJsonFromTopicInfo(most_recent, queryType=QueryType.POLITCAL_LEANING, cached=True)
             print(json)
             return json
         else:
