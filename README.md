@@ -82,7 +82,7 @@ Replace query topic with whatever you want to know more about polically for exam
 
 ## API Documentation
 
-
+### DEI Friendliness Queries
 
 #### getDEIFriendlinessScore/{query_topic}
 
