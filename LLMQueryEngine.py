@@ -26,7 +26,7 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 #
 class LLMQueryEngine():
 
-    def __init__(self, localLLM=False) -> None:
+    def __init__(self, localLLM=False, withCitation=False) -> None:
         # The LLM version
         # default_cpu_llama_local_llm = LocalLLMFactory.configureLlamaCPP()
         if localLLM:
@@ -40,14 +40,15 @@ class LLMQueryEngine():
         # self.news_document_index = DataIngestion.createNewsDocumentsIndex(reCreateIndex=True)
         self.news_document_index = DataIngestion.createNewsDocumentsIndex(reCreateIndex=False)
         
-        self.citation_query_engine = CitationQueryEngine.from_args(
-            self.news_document_index,
-            similarity_top_k=2,
-            # here we can control how granular citation sources are, the default is 512
-            citation_chunk_size=128,
-            # llm=default_cpu_llama_local_llm,
-            llm=llm_to_use,
-        )
+        if withCitation:
+            self.citation_query_engine = CitationQueryEngine.from_args(
+                self.news_document_index,
+                similarity_top_k=2,
+                # here we can control how granular citation sources are, the default is 512
+                citation_chunk_size=128,
+                # llm=default_cpu_llama_local_llm,
+                llm=llm_to_use,
+            )
 
         return
 
