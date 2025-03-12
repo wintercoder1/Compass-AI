@@ -1,5 +1,5 @@
-# DEICheck.ai
-The retrieval augmented generative AI powered app that fuels DEICheck.ai. Uses Llama with Llama Index and Pinecone Vector Database. (Coming soon... for now it uses LLamaIndex default in memory vector store for word embeddings instead.)
+# Compass-AI
+The retrieval augmented generative AI powered app that fuels Compass-AI.io. Uses Llama with Llama Index and Pinecone Vector Database. (Coming soon... for now it uses LLamaIndex default in memory vector store for word embeddings instead.)
 
 ## What it does
 
@@ -103,6 +103,16 @@ context: The AI powered explaination of why the DEI score is what it is. This is
 
 Coming soon..
 
+
+### Wokeness Queries
+
+#### getWokenessScore/{query_topic}
+
+Coming soon..
+
+#### getWokenessScoreWithCitation/{query_topic}
+
+Coming soon..
 
 
 ### Political Leaning Queries
