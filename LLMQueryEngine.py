@@ -2,7 +2,7 @@ import DataIngestion
 import LLMConfig
 import Util
 from dotenv import find_dotenv, dotenv_values
-from PromptTemplates import POLITICAL_LIB_OR_CON_SCORE_PROMPT, DEI_FRIENDLY_SCORE_PROMPT
+from PromptTemplates import POLITICAL_LIB_OR_CON_SCORE_PROMPT, DEI_FRIENDLY_SCORE_PROMPT, WOKENESS_SCORE_PROMPT, FEC_FINANICAL_CONTRIBUTION_DATA_OVERVIEW_PROMPT
 import torch
 from torch import cuda
 from huggingface_hub import InferenceClient
@@ -144,9 +144,40 @@ class LLMQueryEngine():
 
             return str(response)
 
+    def wokenessRatinglQueryWithOUTCitation(self, topic):
+            prompt_tmpl = PromptTemplate(WOKENESS_SCORE_PROMPT)
+            the_query = prompt_tmpl.format(topic_of_prompt=topic)
+
+            llm = LLMConfig.configureHFLlamaIndexInferenceRemote()
+            response = llm.complete(the_query)
+
+            return str(response)
+
+    #
+    #
+    # FEC Financial Contribution Data
+    #
+    #
+    def fec_financialContributionsDataQuery(self, topic:str, financial_contribution_data:str):
+        # Prompt template with topic.
+        prompt_tmpl = PromptTemplate(FEC_FINANICAL_CONTRIBUTION_DATA_OVERVIEW_PROMPT )
+        the_query = prompt_tmpl.format(topic_of_prompt=topic)
+        # Append the financial data to the prompt. <---- confirm that this is correct..
+        the_query += '\n'
+        the_query += 'Financial contribution information:'
+        the_query += financial_contribution_data
+
+        llm = LLMConfig.configureHFLlamaIndexInferenceRemote()
+        response = llm.complete(the_query)
+
+        return response
+
 
 #
+#
+#
 # TESTING
+#
 #
 # Test methods to help test the program without running the api server.
 # TODO: Put these in a seperate testing only file.
@@ -171,6 +202,11 @@ def testLocalGPU(topic: str):
 
     return output
 
+def testFECFinancialContributionsQuery(topic: str):
+    llmWithCitations = LLMQueryEngine()
+    output = llmWithCitations.fec_financialContributionsDataQuery(topic)
+    return output
+
 
 if __name__ == "__main__":
     # Test topics
@@ -182,9 +218,14 @@ if __name__ == "__main__":
     # topic = 'Molson'
     # topic = 'Valvoline'
     # topic = 'Diddy'
-    topic = 'Ghislaine Maxwell'
+    # topic = 'Ghislaine Maxwell'
     # resp = testWithTopic(topic)
-    resp = testWithTopicDEI(topic)
+    # resp = testWithTopicDEI(topic)
     # resp = testLocalGPU(topic)
     # print('\n' + str(resp) + '\n')
+
+
+    topic = 'Dropbox, Inc'
+    resp = testWithTopicDEI(topic)
+
     print('\n' + str(resp) + '\n')
