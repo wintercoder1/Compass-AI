@@ -1,5 +1,5 @@
 # We give examples of what we want to output to look like. 
-# This technique is often given the fancy name ' few-shot prompting'
+# This technique is often given the fancy name: 'few-shot prompting'
 POLITICAL_LIB_OR_CON_SCORE_PROMPT = (
         "You are the world class expert and judging the political leanings of people and companies."
         " "
@@ -26,23 +26,81 @@ POLITICAL_LIB_OR_CON_SCORE_PROMPT = (
         "What is the political leaning of {topic_of_prompt}?"
 )
 
-
 DEI_FRIENDLY_SCORE_PROMPT = (
         "You are a world class expert at judging what people or companies think of DEI. "
         "You are the authority on their DEI friendliness score."
         " "
         "The rating is on a scale of 1-5. 1 means they are racist and do not believe in including other races. "
-        "5 means the topic lovse DEI and truly believes in the principles of "
+        "5 means the topic love DEI and truly believes in the principles of "
         "Diversity Equity and Inclusion. "
         " "
         "Example:"
         " "
         "Kamala Harris: 5"
         "Blackrock: 5"
+        "Lena Dunham: 5"
         "NFL: 4"
         "Elon Musk: 1"
-        "David Sacks: "
+        "David Sacks: 1"
         "Chamath: 2"
+        "Trump: 0"
+        " "
+        " "
+        "Format the answer as follows:"
+        " "
+        "rating: <insert rating>"
+        "context: <insert the reason>"
         " "
         "What is the DEI friendliness rating of {topic_of_prompt}?"
 )
+
+WOKENESS_SCORE_PROMPT = (
+        "You are a world class expert at judging what people or companies are 'Woke'. "
+        "You are the authority on their wokeness score."
+        " "
+        "The rating is on a scale of 1-5. 1 means they do not believe in wokeness and defining every aspcet of society "
+        "through gender race and other things that divide us.. "
+        "5 means the topic wokeness and truly believes in the principles of caring about social justice destrimination and not "
+        "liking white men. "
+        " "
+        "Example:"
+        " "
+        "Kamala Harris: 5"
+        "Blackrock: 5"
+        "Lena Dunham: 5"
+        "Emma Watson: 4"
+        "Meryl Streep: 3"
+        "NFL: 4"
+        "Elon Musk: 1"
+        "David Sacks: 1"
+        "Chamath: 2"
+        "Hitler: 0"
+        "Trump: 1"
+        " "
+        " "
+        "Format the answer as follows:"
+        " "
+        "rating: <insert rating>"
+        "context: <insert the reason>"
+        " "
+        "It is very important to format as described above. It need both a rating and a context setion. Those should be "
+        "seperate on different lines with the words rating or context followed by a semi colon. (:) "
+        " "
+        "What is the Wokeness rating of {topic_of_prompt}?"
+)
+
+
+FEC_FINANICAL_CONTRIBUTION_DATA_OVERVIEW_PROMPT = (
+    "Could you take the following information from the FEC (with regards to financial contributions to political campaigns) and tell me what is says about the company {topic_of_prompt}? The donations are from a PAC and individuals associated with the company. In particular focus on what is says about the company's political leaning"
+)
+
+# FEC_FINANICAL_CONTRIBUTION_DATA_OVERVIEW_PROMPT = (
+# #     "Could you summarize the following information from the FEC (with regards to finiancial contriubtions to political campaigns) and tell us what is says about the company {topic_of_prompt}?"
+#     "Could you make sense of this?"
+# )
+
+# FEC_FINANICAL_CONTRIBUTION_DATA_OVERVIEW_PROMPT = (
+#     "Could you make sense of this?"
+#     "It is political contribution data,from a PAC that is affiliated with {topic_of_prompt}"
+#     "What does it tell us about {topic_of_prompt}?"
+# )
