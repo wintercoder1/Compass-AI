@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import find_dotenv, dotenv_values
+import platform
 import ssl
 import uvicorn
 import CoreLogic
@@ -78,6 +80,9 @@ async def getWokenessScore(query_topic, overrideCache: bool | None = None):
                                                             withCitation=False)
     return jsonBody
 
+@app.get("/getFinancialContributions/{query_topic}")
+async def getFinancialContributions():
+    pass
 
 #
 # Cached responses.
@@ -103,6 +108,9 @@ async def getCachedWokenessScoresAPI():
     jsonBody = CoreLogic.getCachedWokenessScoresEntries()
     return jsonBody
 
+@app.get("/getCachedFinancialContributions/{query_topic}")
+async def getCachedFinancialContributions():
+    pass
 
 #
 # Test Response
@@ -111,13 +119,18 @@ async def getCachedWokenessScoresAPI():
 async def testResponse():
     return {'test': 'test'}
 
-# Use this ewith the uvicorn web server.
+# Use this with the uvicorn web server.
 if __name__ == "__main__":
-    # ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    # ssl_context.load_cert_chain('/Users/steve/Documents/Dev/DEICheck.ai-LLM-RAG/DEICheck.ai/ssl/cert.pem', 
-    #                             keyfile='/Users/steve/Documents/Dev/DEICheck.ai-LLM-RAG/DEICheck.ai/ssl/key.pem')
-    # uvicorn.run('API:app', host="127.0.0.1", port=8000, ssl=ssl_context)
-    uvicorn.run('API:app', host="127.0.0.1", port=8000, reload=True)
-    # uvicorn.run("API:app", host="127.0.0.1", port=8000, reload=True, ssl_keyfile="ssl/key.pem", ssl_certfile="ssl/cert.pem")
-    # uvicorn.run("API:app", host="0.0.0.0", port=8000, reload=True, ssl_keyfile="./ssl/key.pem", ssl_certfile="./ssl/cert.pem")
-    # reload_dirs=["html_files"], 
+
+    # Only dev environment will be 'Darwin'/MacOS.
+    isProd = platform.system() != 'Darwin'
+
+    if isProd:
+        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        dotenv = dotenv_values(find_dotenv())
+        SSL_CERTIFICATE_PATH=dotenv.get('SSL_CERTIFICATE_PATH')
+        SSL_CERTIFICATE_KEY_PATH=dotenv.get('SSL_CERTIFICATE_KEY_PATH')
+        ssl_context.load_cert_chain(SSL_CERTIFICATE_PATH, keyfile=SSL_CERTIFICATE_KEY_PATH)
+        uvicorn.run('API:app', host="127.0.0.1", port=8000, ssl=ssl_context)
+    else:
+        uvicorn.run('API:app', host="127.0.0.1", port=8000, reload=True)
