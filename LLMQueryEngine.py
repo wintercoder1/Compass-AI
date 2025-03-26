@@ -6,7 +6,7 @@ from PromptTemplates import POLITICAL_LIB_OR_CON_SCORE_PROMPT, DEI_FRIENDLY_SCOR
 from llama_index.core import PromptTemplate
 from llama_index.core import Settings
 from llama_index.core.query_engine import CitationQueryEngine
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+# 
 
 #
 #
@@ -30,12 +30,14 @@ class LLMQueryEngine():
             llm_to_use = LLMConfig.configureLlamaCPP()
         else:
             llm_to_use = LLMConfig.configureHFLlamaIndexInferenceRemote()
-        # The embeddings model
-        bge_small_embed_model = HuggingFaceEmbedding(model_name='BAAI/bge-small-en-v1.5')
-        Settings.embed_model = bge_small_embed_model
-
+       
+        
         
         if withCitation:
+            from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+            # The embeddings model
+            bge_small_embed_model = HuggingFaceEmbedding(model_name='BAAI/bge-small-en-v1.5')
+            Settings.embed_model = bge_small_embed_model
 
             # self.news_document_index = DataIngestion.createNewsDocumentsIndex(reCreateIndex=True)
             self.news_document_index = DataIngestion.createNewsDocumentsIndex(reCreateIndex=False)    
