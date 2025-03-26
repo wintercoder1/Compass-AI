@@ -92,16 +92,8 @@ class LLMQueryEngine():
 
         return str(response)
     
-    # Local models. This means gguf files running on cpu or gpu.
+    # Local models. This means gguf files running on gpu.
     # Mostly for curiousity. The remote endpoints are way way way faster.
-    def politicalQueryLocal(self, topic):
-        prompt_tmpl = PromptTemplate(POLITICAL_LIB_OR_CON_SCORE_PROMPT)
-        the_query = prompt_tmpl.format(topic_of_prompt=topic)
-
-        llm = LLMConfig.configureLlamaCPPWithGPU()
-        response = llm.complete(the_query)
-
-        return response
     
     def politicalQueryWithGPULocal(self, topic, useHFLocal=False):
         prompt_tmpl = PromptTemplate(POLITICAL_LIB_OR_CON_SCORE_PROMPT)
@@ -158,14 +150,19 @@ class LLMQueryEngine():
     # FEC Financial Contribution Data
     #
     #
-    def fec_financialContributionsDataQuery(self, topic:str, financial_contribution_data:str):
+    def fec_financialContributionsDataQuery(self, topic:str, financial_contribution_data ):
         # Prompt template with topic.
-        prompt_tmpl = PromptTemplate(FEC_FINANICAL_CONTRIBUTION_DATA_OVERVIEW_PROMPT )
+        prompt_tmpl = PromptTemplate(FEC_FINANICAL_CONTRIBUTION_DATA_OVERVIEW_PROMPT)
+        # prompt_tmpl = PromptTemplate(RAW_DATA_TEST_PROMPT)
         the_query = prompt_tmpl.format(topic_of_prompt=topic)
         # Append the financial data to the prompt. <---- confirm that this is correct..
         the_query += '\n'
-        the_query += 'Financial contribution information:'
-        the_query += financial_contribution_data
+        the_query += 'Financial contribution information:\n'
+        the_query += str(financial_contribution_data)
+
+        # print()
+        # print(the_query)
+        # print()
 
         llm = LLMConfig.configureHFLlamaIndexInferenceRemote()
         response = llm.complete(the_query)
