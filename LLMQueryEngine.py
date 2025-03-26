@@ -3,8 +3,6 @@ import LLMConfig
 import Util
 from dotenv import find_dotenv, dotenv_values
 from PromptTemplates import POLITICAL_LIB_OR_CON_SCORE_PROMPT, DEI_FRIENDLY_SCORE_PROMPT, WOKENESS_SCORE_PROMPT, FEC_FINANICAL_CONTRIBUTION_DATA_OVERVIEW_PROMPT
-import torch
-from torch import cuda
 from llama_index.core import PromptTemplate
 from llama_index.core import Settings
 from llama_index.core.query_engine import CitationQueryEngine
@@ -151,17 +149,6 @@ def testWithTopicDEI(topic: str):
     llmWithCitations = LLMQueryEngine()
     response = llmWithCitations.deiFriendlinessRatinglQueryWithOUTCitation(topic)
     return response
-
-def testLocalGPU(topic: str):
-
-    print('torch.cuda.is_available()')
-    print(torch.cuda.is_available())
-    print(cuda.current_device())
- 
-    llmWithCitations = LLMQueryEngine()
-    output = llmWithCitations.politicalQueryWithGPULocal(topic, useHF=True)
-
-    return output
 
 def testFECFinancialContributionsQuery(topic: str):
     llmWithCitations = LLMQueryEngine()
