@@ -108,9 +108,9 @@ async def getCachedWokenessScoresAPI():
     jsonBody = CoreLogic.getCachedWokenessScoresEntries()
     return jsonBody
 
-@app.get("/getCachedFinancialContributions/{query_topic}")
+@app.get("/getCachedFinancialContributions")
 async def getCachedFinancialContributions():
-    pass
+    return []
 
 #
 # Test Response
