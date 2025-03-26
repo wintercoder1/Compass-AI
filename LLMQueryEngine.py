@@ -34,7 +34,10 @@ class LLMQueryEngine():
         
         
         if withCitation:
+
+            # Only import this if needed. It containes a ton of dependencies taht take a ton of time and storage to download.
             from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+
             # The embeddings model
             bge_small_embed_model = HuggingFaceEmbedding(model_name='BAAI/bge-small-en-v1.5')
             Settings.embed_model = bge_small_embed_model
