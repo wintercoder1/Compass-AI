@@ -5,7 +5,6 @@ from dotenv import find_dotenv, dotenv_values
 from PromptTemplates import POLITICAL_LIB_OR_CON_SCORE_PROMPT, DEI_FRIENDLY_SCORE_PROMPT, WOKENESS_SCORE_PROMPT, FEC_FINANICAL_CONTRIBUTION_DATA_OVERVIEW_PROMPT
 import torch
 from torch import cuda
-from huggingface_hub import InferenceClient
 from llama_index.core import PromptTemplate
 from llama_index.core import Settings
 from llama_index.core.query_engine import CitationQueryEngine
@@ -91,41 +90,6 @@ class LLMQueryEngine():
         response = llm.complete(the_query)
 
         return str(response)
-    
-    # Local models. This means gguf files running on gpu.
-    # Mostly for curiousity. The remote endpoints are way way way faster.
-    
-    def politicalQueryWithGPULocal(self, topic, useHFLocal=False):
-        prompt_tmpl = PromptTemplate(POLITICAL_LIB_OR_CON_SCORE_PROMPT)
-        the_query = prompt_tmpl.format(topic_of_prompt=topic)
-
-        if useHFLocal:
-            gpu_acc_llama = LLMConfig.configureLlamaTransformersHFWithGPULocal()
-        else:
-            gpu_acc_llama = LLMConfig.configureLlamaCPPWithGPU()
-
-        response = gpu_acc_llama(
-            the_query,
-            # max_tokens=1024,
-            max_tokens=512,
-            # max_tokens=256,
-            stop=[
-                "<|prompter|>",
-                "<|endoftext|>",
-                "<|endoftext|> \n",
-                "ASSISTANT:",
-                "USER:",
-                "SYSTEM:",
-            ],
-        )
-
-        # Error checkingto make sure the LLM output is formated correctly otherwise return error text.
-        if response['choices'] != None and len(response['choices']) > 0 and response['choices'][0]['text'] != None:
-            response = response['choices'][0]['text']
-        else:
-            response = 'Something went wrong.'
-
-        return response
 
     def deiFriendlinessRatinglQueryWithOUTCitation(self, topic):
             prompt_tmpl = PromptTemplate(DEI_FRIENDLY_SCORE_PROMPT)
