@@ -117,7 +117,7 @@ async def getCachedFinancialContributions():
 #
 
 @app.get("/")
-async def testResponse():
+async def testResponseIndex():
     return {'test': 'test'}
 
 @app.get("/testResponse")
