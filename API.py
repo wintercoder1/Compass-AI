@@ -86,7 +86,7 @@ async def getWokenessScore(query_topic, overrideCache: bool | None = None):
 
 # TODO: Implement pagination for these two endpoints.
 # Returns all previoulsy calculated political leanings.
-@app.get("/getCachedPolitcalLeanings")
+@app.get("/getCachedPoliticalLeanings")
 async def getCachedPolitcalLeaningsAPI():
     jsonBody = CoreLogic.getCachedPolitcalLeaningsEntries()
     return jsonBody
