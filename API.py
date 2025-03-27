@@ -110,7 +110,8 @@ async def getCachedWokenessScoresAPI():
 
 @app.get("/getCachedFinancialContributions")
 async def getCachedFinancialContributions():
-    return []
+    jsonBody = CoreLogic.getCachedFinancialContributionsEntries()
+    return jsonBody
 
 #
 # Test Response
@@ -123,6 +124,12 @@ async def testResponseIndex():
 @app.get("/testResponse")
 async def testResponse():
     return {'test': 'test'}
+
+@app.get("/testFinancialContributionInput")
+async def testFinancialContributionInput():
+    jsonBody = CoreLogic.testFinancialContributions()
+    return jsonBody
+
 
 # Use this with the uvicorn web server.
 if __name__ == "__main__":

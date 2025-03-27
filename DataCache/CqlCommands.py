@@ -47,14 +47,57 @@ CREATE_DEI_CHECK_TABLE = """
         PRIMARY KEY (normalized_topic_name, timestamp)
     );"""
 
+CREATE_WOKENESS_TABLE = """
+    CREATE TABLE IF NOT EXISTS wokeness (
+        normalized_topic_name TEXT,
+        timestamp TIMESTAMP,
+        topic TEXT,
+        rating int,
+        context TEXT,
+        citation TEXT,
+        PRIMARY KEY (normalized_topic_name, timestamp)
+    );"""
+
+# Make sure this is the correct way. Not tested.
+CREATE_FINANCIAL_CONTRIUBTIONS_INFO_TABLE = """
+    CREATE TABLE IF NOT EXISTS financial_contributions (
+        topic TEXT,
+        normalized_topic_name TEXT,
+        timestamp TIMESTAMP,
+        committee_id INT,
+        individual_id INT,
+        fec_financial_contributions_summary_text TEXT,
+        model_used TEXT,
+        date_generated DATE,
+        PRIMARY KEY (normalized_topic_name, timestamp)
+    );"""
+
+# INSERT_POLITICAL_LEANING_INFO_PREPARED = """
+#     INSERT INTO deicheck.political_leaning (normalized_topic_name, timestamp, topic, lean, rating, context, citation) 
+#     VALUES (?, ?, ?, ?, ?, ?, ?);
+#     """
+# INSERT_DEI_CHECK_INFO_PREPARED = """
+#     INSERT INTO deicheck.dei_friendliness (normalized_topic_name, timestamp, topic, rating, context, citation) 
+#     VALUES (?, ?, ?, ?, ?, ?);
+#     """
+
 INSERT_POLITICAL_LEANING_INFO_PREPARED = """
     INSERT INTO deicheck.political_leaning (normalized_topic_name, timestamp, topic, lean, rating, context, citation) 
     VALUES (?, ?, ?, ?, ?, ?, ?);
     """
-INSERT_DEI_CHECK_INFO_PREPARED = """
+INSERT_DEI_FRIENDLINESS_INFO_PREPARED = """
     INSERT INTO deicheck.dei_friendliness (normalized_topic_name, timestamp, topic, rating, context, citation) 
     VALUES (?, ?, ?, ?, ?, ?);
     """
+INSERT_WOKENESS_INFO_PREPARED = """
+    INSERT INTO deicheck.wokeness (normalized_topic_name, timestamp, topic, rating, context, citation) 
+    VALUES (?, ?, ?, ?, ?, ?);
+    """
+INSERT_FINANCIAL_CONTRIUBTIONS_INFO_PREPARED = """
+    INSERT INTO deicheck.financial_contributions (topic, normalized_topic_name, timestamp, committee_id, individual_id, fec_financial_contributions_summary_text, model_used, date_generated) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+    """
+
 
 FETCH_POLITICAL_LEANING_INFO = """
     SELECT * FROM deicheck.political_leaning;
@@ -74,4 +117,25 @@ FETCH_DEI_FRIENDLINESS_INFO_PREPARED = """
     """
 FETCH_DEI_FRIENDLINESS_INFO_MOST_RECENT_PREPARED = """
     SELECT * FROM deicheck.dei_friendliness WHERE normalized_topic_name = ? ORDER BY timestamp DESC LIMIT 1;
+    """
+
+FETCH_WOKENESS_INFO = """
+    SELECT * FROM deicheck.wokeness;
+    """
+FETCH_WOKENESS_INFO_PREPARED = """    
+    SELECT * FROM deicheck.wokeness WHERE normalized_topic_name = ?;
+    """
+FETCH_WOKENESS_INFO_MOST_RECENT_PREPARED = """
+    SELECT * FROM deicheck.wokeness WHERE normalized_topic_name = ? ORDER BY timestamp DESC LIMIT 1;
+    """
+
+
+FETCH_FINANCIAL_CONTRIUBTIONS_INFO = """
+    SELECT * FROM deicheck.financial_contributions;
+    """
+FETCH_FINANCIAL_CONTRIUBTIONS_INFO_PREPARED = """    
+    SELECT * FROM deicheck.financial_contributions WHERE normalized_topic_name = ?;
+    """
+FETCH_FINANCIAL_CONTRIUBTIONS_INFO_MOST_RECENT_PREPARED = """
+    SELECT * FROM deicheck.financial_contributions WHERE normalized_topic_name = ? ORDER BY timestamp DESC LIMIT 1;
     """

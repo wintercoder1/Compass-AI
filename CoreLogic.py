@@ -1,8 +1,13 @@
 from DataCache.CassandraDBCache import CassandraDBCache
 from DataClassWrappers.TopicInfo import TopicInfo
+# from KnowledgeGraph import CypherQueries
+# from KnowledgeGraph.CypherQueries import CypherQueries
+# import KnowledgeGraph.CypherQueries as CypherQueries
+# from KnowledgeGraph import KnowledgeGraphQueryEngine
+from KnowledgeGraph.KnowledgeGraphQueryEngine import KnowledgeGraphQueryEngine
+# import KnowledgeGraph.KnowledgeGraphQueryEngine as KnowledgeGraphQueryEngine
 from LLMQueryEngine import LLMQueryEngine
 from QueryTypeEnum import QueryType
-import KnowledgeGraphQueryEngine
 import Util
 
 isProd = True
@@ -159,26 +164,83 @@ def parseRequestAndCompleteWokenessQuery(query_topic: str, overrideCache:bool=Fa
 # This response will be contained to only the financial contribution data. 
 # The LLM will only summarize the data. It won't include the 'opinion' pf the LLM like the other methods.
 #
-def completeFECFinancialCOntributionsDataQuery(query_topic: str, overrideCache:bool=False):
+def completeFECFinancialContributionsDataQuery(query_topic: str, overrideCache:bool=False):
     #
-    # TODO: Implement data cache/persistence for this type of answer. Create new table.
+    # TODO: Implement data cache/persistence for this type of answer. Create new table.0
     #
+    knowledgeGraph = KnowledgeGraphQueryEngine()
+
+    pac_ID_Response = knowledgeGraph.getPACWithMatchingCompanyName(query_topic)
+    print(pac_ID_Response)
+    # print()
+    # print()
+    # committee_name, committee_id = knowledgeGraph.parsePACRecords(pac_ID_Response)
+    # # print(committee_name)
+    # # print(committee_id)
+    parsed_data = knowledgeGraph.parse_neo4j_result(pac_ID_Response)
+    # print()
+    # print('parsed_data:')
+    # print(parsed_data)
+    # print(parsed_data[0])
+    # print(parsed_data[0]['properties'])
+    # print(parsed_data[0]['properties']['committee_id'])
+    # print(parsed_data[0]['properties']['committee_name'])
+
+    committee_name, committee_id = knowledgeGraph.parsePACRecordsFromNeo4JResult(parsed_data)
+    print()
+    # print(committee_name)
+    # print(committee_id)
+    print()
+    print()
+
+    committee_contributors_response = knowledgeGraph.getCommitteeContributorsWithPacID(pac_id=committee_id)
+    # print(committee_contributors_response)
+    # print()
+    # print()
+
+    committee_contributors_parsed_data = knowledgeGraph.parse_neo4j_result(committee_contributors_response)
 
     # 
     # TODO: Fetch financial contributions for company with KnowledgeGrpah (Neo4J)
     #
+
+    # response = committee_contributors_response
+    
+    # Test only.
+    with open(f"fin_con_example_response_{query_topic}.txt", "w") as file:
+        file.write(str(committee_contributors_response))
+
+    with open(f"fin_con_example_response_{query_topic}_more_parsed.txt", "w") as file:
+        file.write(str(committee_contributors_parsed_data))
+
+    return committee_contributors_response
+
+
+def finanical_contributions_llm_summary_test_from_local_file(query_topic: str):
+    # When downloaded from Neo4J client.
     file_path = './fec_kg_response_dropbox_pac_example.json'
-    financial_contribution_data = Util.load_json(file_path)  ## <---- Replace with query to fetch from knowledge graph DB
+    financial_contribution_data = Util.loadJson(file_path)  ## <---- Replace with query to fetch from knowledge graph DB
     if not financial_contribution_data:
         return {'response': f'Could not find financial contributions from the comapny {topic}'}
     
-    llmWithCitations = LLMQueryEngine()
+    # When taken from saved dump from query with Neo4J python driver.
+    # file_path = './fin_con_example_response_Dropbox.txt'
+    # file_path = './fin_con_example_response_Dropbox_more_parsed.txt'
+    # with open(file_path, 'r') as f:
+    #             financial_contribution_data = f.read()
+    # if not financial_contribution_data:
+    #     return {'response': f'Could not find financial contributions from the comapny {topic}'}
+    
+
+    llm = LLMQueryEngine()
     query_topic_str = str(query_topic)
+    print()
     print(f'Wokeness request received with topic: {query_topic}')
     print('Waiting....')
-    response = llmWithCitations.deiFriendlinessRatinglQueryWithOUTCitation(query_topic_str, financial_contribution_data)
+    print(financial_contribution_data)
+    print(type(financial_contribution_data))
+    response = llm.fec_financialContributionsDataQuery(query_topic_str, financial_contribution_data)
     return response
-
 
 def getCachedPolitcalLeaningsEntries():
     return getCachedEntries(QueryType.POLITCAL_LEANING)
@@ -189,6 +251,8 @@ def getCachedDEIFriendlinessScoresEntries():
 def getCachedWokenessScoresEntries():
     return getCachedEntries(QueryType.WOKENESS)
 
+def getCachedFinancialContributionsEntries():
+    return getCachedEntries(QueryType.FINANCIAL_CONTRIBUTIONS)
 
 def getCachedEntries(queryType: QueryType):
     dbCache = CassandraDBCache(prod=isProd)
@@ -212,6 +276,14 @@ def getCachedEntries(queryType: QueryType):
     item_list = list(normalized_topic_ids_to_item_map.values())
     return item_list
 
+###
+### Test only delete
+###
+def testFinancialContributions():
+    dbCache = CassandraDBCache(prod=isProd)
+    dbCache.writeTopicInfoToDB_FinancialContributionsTest()
+    return {'Maybe worked?': 'Who knows'}
+
 if __name__ == "__main__":
     testIsProd = True
     # dbCache = CassandraDBCache(prod=testIsProd)
@@ -228,6 +300,12 @@ if __name__ == "__main__":
     #
     # Financial contributions
     #
-    topic = 'Dropbox, Inc'
-    financial_contributions = completeFECFinancialCOntributionsDataQuery(query_topic=topic)
+    topic = 'Dropbox'
+    # topic = 'Amazon'
+    print()
+    print()
+    financial_contributions = finanical_contributions_llm_summary_test_from_local_file(query_topic=topic)
+    # financial_contributions = completeFECFinancialContributionsDataQuery(query_topic=topic)
+    print()
+    print('The response: \n')
     print(financial_contributions)
