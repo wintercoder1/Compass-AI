@@ -131,7 +131,7 @@ class CassandraDBCache:
     # Below is test code. Will delete.
     #
     #
-    def writeTopicInfoToDB_FinancialContributionsTest(self, topicInfo: TopicInfo):
+    def writeTopicInfoToDB_FinancialContributionsTest(self):
         # Write LLm answer to the applicate table.
         INSERT = self.session.prepare(CqlCommands.INSERT_FINANCIAL_CONTRIUBTIONS_INFO_PREPARED)
         INSERT.consistency_level = ConsistencyLevel.LOCAL_QUORUM
